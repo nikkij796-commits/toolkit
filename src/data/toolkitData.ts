@@ -124,6 +124,11 @@ export const DEFAULT_TOOLS: Tool[] = [
   tool("predicting", "Gratitude journaling", { journalPrompts: GRATITUDE_PROMPTS, moods: MOODS_PREVENTIVE }),
   tool("predicting", "Affirmations", { guidedSeconds: 60, moods: MOODS_PREVENTIVE }),
   tool("predicting", "List boundaries", { moods: MOODS_PREVENTIVE }),
+  tool("predicting", "Action Planner", {
+    howTo:
+      "Use this when you're anxious about something coming up. Name your intention, your values, and the specific behavior you'll commit to — so you're measuring yourself against your own compass instead of waiting for someone else's approval. Save it, and come back to update your thinking as the situation gets closer or changes.",
+    opensScreen: "planner",
+  }),
 
   // 2. Identifying & Feeling
   tool("identifying", "Meditation", { id: "identifying-reiki", guidedSeconds: 36 * 60, moods: MOODS_IDENTIFYING }),

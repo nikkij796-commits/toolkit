@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { CATEGORIES, DEFAULT_TOOLS } from "../data/toolkitData";
 import type {
+  ActionPlan,
   CategoryId,
   CheckIn,
   CustomTool,
@@ -67,6 +68,11 @@ interface AppDataValue {
   getToolListItems: (toolId: string, bucket: string) => ToolListItem[];
   addToolListItem: (toolId: string, bucket: string, text: string) => void;
   removeToolListItem: (toolId: string, bucket: string, itemId: string) => void;
+
+  actionPlans: ActionPlan[];
+  addActionPlan: (plan: Omit<ActionPlan, "id" | "createdAt" | "updatedAt">) => void;
+  updateActionPlan: (id: string, patch: Partial<Pick<ActionPlan, "title" | "intention" | "values" | "behavior">>) => void;
+  deleteActionPlan: (id: string) => void;
 }
 
 const AppDataContext = createContext<AppDataValue | null>(null);
@@ -94,6 +100,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     "anxiety-toolkit:tool-lists",
     {},
   );
+  const [actionPlans, setActionPlans] = useLocalStorage<ActionPlan[]>("anxiety-toolkit:action-plans", []);
 
   const tools = useMemo<Tool[]>(() => {
     const base = [...DEFAULT_TOOLS, ...customTools];
@@ -201,6 +208,21 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const addActionPlan: AppDataValue["addActionPlan"] = (plan) => {
+    const now = new Date().toISOString();
+    setActionPlans((prev) => [{ ...plan, id: newId(), createdAt: now, updatedAt: now }, ...prev]);
+  };
+
+  const updateActionPlan: AppDataValue["updateActionPlan"] = (id, patch) => {
+    setActionPlans((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...patch, updatedAt: new Date().toISOString() } : p)),
+    );
+  };
+
+  const deleteActionPlan = (id: string) => {
+    setActionPlans((prev) => prev.filter((p) => p.id !== id));
+  };
+
   const value: AppDataValue = {
     tools,
     toolsByCategory,
@@ -230,6 +252,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     getToolListItems,
     addToolListItem,
     removeToolListItem,
+    actionPlans,
+    addActionPlan,
+    updateActionPlan,
+    deleteActionPlan,
   };
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;

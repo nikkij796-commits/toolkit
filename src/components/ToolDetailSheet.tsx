@@ -16,10 +16,12 @@ export function ToolDetailSheet({
   tool,
   onClose,
   onStartGuided,
+  onOpenScreen,
 }: {
   tool: Tool;
   onClose: () => void;
   onStartGuided?: (tool: Tool) => void;
+  onOpenScreen?: (screenId: string) => void;
 }) {
   const { favorites, toggleFavorite, updateTool, removeCustomTool, todayKeyStr, toggleDayTool, getDayLog, toolById } =
     useAppData();
@@ -122,6 +124,9 @@ export function ToolDetailSheet({
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
+              {liveTool.opensScreen && onOpenScreen && (
+                <Button onClick={() => onOpenScreen(liveTool.opensScreen!)}>Open {liveTool.name}</Button>
+              )}
               {onStartGuided && (
                 <Button onClick={() => onStartGuided(liveTool)}>Guided version</Button>
               )}

@@ -6,6 +6,7 @@ import { HomeScreen } from "./screens/HomeScreen";
 import { ToolkitScreen } from "./screens/ToolkitScreen";
 import { TrackerScreen } from "./screens/TrackerScreen";
 import { JournalScreen } from "./screens/JournalScreen";
+import { ActionPlannerScreen } from "./screens/ActionPlannerScreen";
 import { CommunicationScreen } from "./screens/CommunicationScreen";
 import { ResourcesScreen } from "./screens/ResourcesScreen";
 import { ToolDetailSheet } from "./components/ToolDetailSheet";
@@ -50,6 +51,7 @@ function AppShell() {
       {screen === "toolkit" && <ToolkitScreen onOpenTool={setOpenTool} />}
       {screen === "tracker" && <TrackerScreen />}
       {screen === "journal" && <JournalScreen />}
+      {screen === "planner" && <ActionPlannerScreen />}
       {screen === "communication" && <CommunicationScreen />}
       {screen === "resources" && <ResourcesScreen />}
 
@@ -63,6 +65,10 @@ function AppShell() {
             setOpenTool(null);
             setGuidedStartTool(tool);
             setGuidedOpen(true);
+          }}
+          onOpenScreen={(screenId) => {
+            setOpenTool(null);
+            setScreen(screenId as AppScreen);
           }}
         />
       )}

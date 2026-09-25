@@ -33,6 +33,12 @@ export interface Tool {
    * shown as removable bubbles.
    */
   listBuckets?: string[];
+  /**
+   * When set, opening this tool offers a button that navigates to a
+   * dedicated app screen (a NavBar ScreenId, e.g. "planner") instead of, or
+   * alongside, its normal in-sheet actions.
+   */
+  opensScreen?: string;
 }
 
 export interface ToolListItem {
@@ -96,6 +102,22 @@ export interface JournalEntry {
   createdAt: string; // ISO
   text: string;
   tags: string[];
+}
+
+/**
+ * A saved, reopenable plan for handling something you're anxious about —
+ * built around your own intention, values and behavior rather than an
+ * outside opinion. Unlike JournalEntry, these are meant to be revisited and
+ * edited as a situation evolves, so they carry a title and an updatedAt.
+ */
+export interface ActionPlan {
+  id: string;
+  title: string;
+  intention: string;
+  values: string;
+  behavior: string;
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
 }
 
 export interface ToolEdits {
