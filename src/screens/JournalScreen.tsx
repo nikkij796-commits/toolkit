@@ -3,23 +3,30 @@ import type { JournalPrompt } from "../types";
 import { useAppData } from "../state/AppDataContext";
 import { Button, Card, ConfirmDeleteButton, Pill, ScreenHeader } from "../components/ui";
 import { todayKey } from "../state/AppDataContext";
-import { CBT_PROMPTS, THOUGHTS_ON_TRIAL_PROMPTS, GRATITUDE_PROMPTS } from "../data/toolkitData";
+import {
+  CBT_PROMPTS,
+  THOUGHTS_ON_TRIAL_PROMPTS,
+  GRATITUDE_PROMPTS,
+  HONESTY_FRAMEWORK_PROMPTS,
+} from "../data/toolkitData";
 
 const SUGGESTED_TAGS = ["trigger", "tool used", "mood", "win", "hard day"];
 
-type EntryType = "free" | "cbt" | "trial" | "gratitude";
+type EntryType = "free" | "cbt" | "trial" | "gratitude" | "honesty";
 
 const ENTRY_TYPES: { id: EntryType; label: string }[] = [
   { id: "free", label: "Free text" },
   { id: "cbt", label: "CBT" },
   { id: "trial", label: "Thoughts on trial" },
   { id: "gratitude", label: "Gratitude journal" },
+  { id: "honesty", label: "Honesty Framework" },
 ];
 
 const PROMPTS_BY_TYPE: Record<Exclude<EntryType, "free">, JournalPrompt[]> = {
   cbt: CBT_PROMPTS,
   trial: THOUGHTS_ON_TRIAL_PROMPTS,
   gratitude: GRATITUDE_PROMPTS,
+  honesty: HONESTY_FRAMEWORK_PROMPTS,
 };
 
 export function JournalScreen() {

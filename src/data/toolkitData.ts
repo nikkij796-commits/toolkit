@@ -88,6 +88,13 @@ export const GRATITUDE_PROMPTS: JournalPrompt[] = [
   { key: "three", label: "3." },
 ];
 
+export const HONESTY_FRAMEWORK_PROMPTS: JournalPrompt[] = [
+  { key: "lie", label: "What is it that you want to lie about?", placeholder: "Name it plainly." },
+  { key: "why", label: "Why?", placeholder: "What are you hoping to avoid or protect?" },
+  { key: "truth", label: "What is the truth?", placeholder: "Say it straight." },
+  { key: "change", label: "How are you going to change your behavior?", placeholder: "What will you do differently?" },
+];
+
 /**
  * Starter "might help right now" moods per tool — which check-in
  * intensities (1 Calm, 2 Stressed, 3 Overwhelming) each tool gets
@@ -144,6 +151,7 @@ export const DEFAULT_TOOLS: Tool[] = [
   tool("identifying", "Music", { guidedSeconds: 90, moods: MOODS_IDENTIFYING }),
   tool("identifying", "Clarify assumptions", { moods: MOODS_IDENTIFYING }),
   tool("identifying", "Thoughts on trial", { journalPrompts: THOUGHTS_ON_TRIAL_PROMPTS, moods: MOODS_IDENTIFYING }),
+  tool("identifying", "Honesty Framework", { journalPrompts: HONESTY_FRAMEWORK_PROMPTS, moods: [2] }),
 
   // 3. Self Care
   tool("selfcare", "Nutrition / water", { moods: MOODS_SELFCARE }),
