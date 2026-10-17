@@ -8,6 +8,7 @@ import type {
   CustomTool,
   DayLog,
   JournalEntry,
+  PostTherapyCheckIn,
   Resource,
   Tool,
   ToolEdits,
@@ -73,6 +74,10 @@ interface AppDataValue {
   addActionPlan: (plan: Omit<ActionPlan, "id" | "createdAt" | "updatedAt">) => void;
   updateActionPlan: (id: string, patch: Partial<Pick<ActionPlan, "title" | "intention" | "values" | "behavior">>) => void;
   deleteActionPlan: (id: string) => void;
+
+  postTherapyCheckIns: PostTherapyCheckIn[];
+  addPostTherapyCheckIn: (checkIn: Omit<PostTherapyCheckIn, "id" | "createdAt">) => void;
+  deletePostTherapyCheckIn: (id: string) => void;
 }
 
 const AppDataContext = createContext<AppDataValue | null>(null);
@@ -101,6 +106,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     {},
   );
   const [actionPlans, setActionPlans] = useLocalStorage<ActionPlan[]>("anxiety-toolkit:action-plans", []);
+  const [postTherapyCheckIns, setPostTherapyCheckIns] = useLocalStorage<PostTherapyCheckIn[]>(
+    "anxiety-toolkit:post-therapy-checkins",
+    [],
+  );
 
   const tools = useMemo<Tool[]>(() => {
     const base = [...DEFAULT_TOOLS, ...customTools];
@@ -223,6 +232,14 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setActionPlans((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const addPostTherapyCheckIn: AppDataValue["addPostTherapyCheckIn"] = (checkIn) => {
+    setPostTherapyCheckIns((prev) => [{ ...checkIn, id: newId(), createdAt: new Date().toISOString() }, ...prev]);
+  };
+
+  const deletePostTherapyCheckIn = (id: string) => {
+    setPostTherapyCheckIns((prev) => prev.filter((c) => c.id !== id));
+  };
+
   const value: AppDataValue = {
     tools,
     toolsByCategory,
@@ -256,6 +273,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     addActionPlan,
     updateActionPlan,
     deleteActionPlan,
+    postTherapyCheckIns,
+    addPostTherapyCheckIn,
+    deletePostTherapyCheckIn,
   };
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;

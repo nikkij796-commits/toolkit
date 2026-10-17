@@ -1,4 +1,12 @@
-export type ScreenId = "home" | "toolkit" | "tracker" | "journal" | "planner" | "communication" | "resources";
+export type ScreenId =
+  | "home"
+  | "toolkit"
+  | "tracker"
+  | "journal"
+  | "planner"
+  | "posttherapy"
+  | "communication"
+  | "resources";
 
 const TABS: { id: ScreenId; label: string; icon: string }[] = [
   { id: "home", label: "Home", icon: "◎" },
@@ -6,6 +14,7 @@ const TABS: { id: ScreenId; label: string; icon: string }[] = [
   { id: "tracker", label: "Tracker", icon: "▦" },
   { id: "journal", label: "Journal", icon: "✎" },
   { id: "planner", label: "Plan", icon: "✦" },
+  { id: "posttherapy", label: "Check-in", icon: "☾" },
   { id: "communication", label: "Talk", icon: "◐" },
   { id: "resources", label: "More", icon: "✺" },
 ];
@@ -13,7 +22,7 @@ const TABS: { id: ScreenId; label: string; icon: string }[] = [
 export function NavBar({ current, onChange }: { current: ScreenId; onChange: (id: ScreenId) => void }) {
   return (
     <nav className="fixed bottom-0 inset-x-0 z-30 bg-paper/95 backdrop-blur border-t border-black/5 pb-[env(safe-area-inset-bottom)]">
-      <div className="mx-auto max-w-md grid grid-cols-7">
+      <div className="mx-auto max-w-md grid grid-cols-8">
         {TABS.map((tab) => {
           const active = tab.id === current;
           return (

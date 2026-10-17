@@ -120,6 +120,20 @@ export interface ActionPlan {
   updatedAt: string; // ISO
 }
 
+/**
+ * A dated, write-once snapshot logged right after a therapy session —
+ * unlike ActionPlan, these aren't meant to be edited afterward, just
+ * looked back on.
+ */
+export interface PostTherapyCheckIn {
+  id: string;
+  createdAt: string; // ISO
+  feeling: string;
+  needsDecompress: string;
+  decompressPlan: string;
+  noTimeReasons: string;
+}
+
 export interface ToolEdits {
   [toolId: string]: Partial<Pick<Tool, "name" | "howTo" | "guidedSteps" | "guidedSeconds" | "moods">>;
 }

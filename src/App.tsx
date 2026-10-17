@@ -7,6 +7,7 @@ import { ToolkitScreen } from "./screens/ToolkitScreen";
 import { TrackerScreen } from "./screens/TrackerScreen";
 import { JournalScreen } from "./screens/JournalScreen";
 import { ActionPlannerScreen } from "./screens/ActionPlannerScreen";
+import { PostTherapyCheckInScreen } from "./screens/PostTherapyCheckInScreen";
 import { CommunicationScreen } from "./screens/CommunicationScreen";
 import { ResourcesScreen } from "./screens/ResourcesScreen";
 import { ToolDetailSheet } from "./components/ToolDetailSheet";
@@ -52,6 +53,7 @@ function AppShell() {
       {screen === "tracker" && <TrackerScreen />}
       {screen === "journal" && <JournalScreen />}
       {screen === "planner" && <ActionPlannerScreen />}
+      {screen === "posttherapy" && <PostTherapyCheckInScreen />}
       {screen === "communication" && <CommunicationScreen />}
       {screen === "resources" && <ResourcesScreen />}
 

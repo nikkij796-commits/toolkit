@@ -95,6 +95,10 @@ export const HONESTY_FRAMEWORK_PROMPTS: JournalPrompt[] = [
   { key: "change", label: "How are you going to change your behavior?", placeholder: "What will you do differently?" },
 ];
 
+export const IM_SORRY_WHAT_PROMPTS: JournalPrompt[] = [
+  { key: "note", label: "I'm sorry you want me to feel bad for…", placeholder: "Say what it is, plainly." },
+];
+
 /**
  * Starter "might help right now" moods per tool — which check-in
  * intensities (1 Calm, 2 Stressed, 3 Overwhelming) each tool gets
@@ -170,6 +174,11 @@ export const DEFAULT_TOOLS: Tool[] = [
   tool("selfcare", "Cooking", { moods: MOODS_SELFCARE }),
   tool("selfcare", "Screen break", { moods: MOODS_SELFCARE }),
   tool("selfcare", "Doodling", { moods: MOODS_SELFCARE }),
+  tool("selfcare", "Post-Therapy Check-In", {
+    howTo:
+      "Use this right after a session, before you jump back into your day. Check in on how you're feeling, whether you need time to decompress, what you'll actually do about it, and — if you can't make the time — be honest with yourself about why.",
+    opensScreen: "posttherapy",
+  }),
 
   // 4. Communication
   tool("communication", "Talk it out"),

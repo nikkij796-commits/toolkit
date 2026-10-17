@@ -8,11 +8,12 @@ import {
   THOUGHTS_ON_TRIAL_PROMPTS,
   GRATITUDE_PROMPTS,
   HONESTY_FRAMEWORK_PROMPTS,
+  IM_SORRY_WHAT_PROMPTS,
 } from "../data/toolkitData";
 
 const SUGGESTED_TAGS = ["trigger", "tool used", "mood", "win", "hard day"];
 
-type EntryType = "free" | "cbt" | "trial" | "gratitude" | "honesty";
+type EntryType = "free" | "cbt" | "trial" | "gratitude" | "honesty" | "sorry";
 
 const ENTRY_TYPES: { id: EntryType; label: string }[] = [
   { id: "free", label: "Free text" },
@@ -20,6 +21,7 @@ const ENTRY_TYPES: { id: EntryType; label: string }[] = [
   { id: "trial", label: "Thoughts on trial" },
   { id: "gratitude", label: "Gratitude journal" },
   { id: "honesty", label: "Honesty Framework" },
+  { id: "sorry", label: "I'm sorry, WHAT" },
 ];
 
 const PROMPTS_BY_TYPE: Record<Exclude<EntryType, "free">, JournalPrompt[]> = {
@@ -27,6 +29,7 @@ const PROMPTS_BY_TYPE: Record<Exclude<EntryType, "free">, JournalPrompt[]> = {
   trial: THOUGHTS_ON_TRIAL_PROMPTS,
   gratitude: GRATITUDE_PROMPTS,
   honesty: HONESTY_FRAMEWORK_PROMPTS,
+  sorry: IM_SORRY_WHAT_PROMPTS,
 };
 
 export function JournalScreen() {
