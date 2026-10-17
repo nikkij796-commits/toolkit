@@ -93,7 +93,7 @@ export function GuidedMode({ onClose, startTool }: { onClose: () => void; startT
       <div className="flex-1 overflow-y-auto px-5 pb-8">
         {phase === "feeling" && (
           <div className="pt-8">
-            <h2 className="text-xl font-semibold text-ink">What's going on right now?</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">What's going on right now?</h2>
             <p className="mt-1 text-sm text-ink-soft">Pick whatever's closest.</p>
             <div className="mt-6 flex flex-wrap gap-2">
               {FEELINGS.map((f) => (
@@ -110,7 +110,7 @@ export function GuidedMode({ onClose, startTool }: { onClose: () => void; startT
 
         {phase === "tool" && (
           <div className="pt-8">
-            <h2 className="text-xl font-semibold text-ink">Pick a tool</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">Pick a tool</h2>
             <p className="mt-1 text-sm text-ink-soft">A few that might fit right now.</p>
             <div className="mt-5 space-y-2">
               {recommended.map((t) => (
@@ -148,7 +148,7 @@ export function GuidedMode({ onClose, startTool }: { onClose: () => void; startT
 
         {phase === "timer" && selectedTool && (
           <div className="flex flex-col items-center pt-10 text-center">
-            <h2 className="text-xl font-semibold text-ink">{selectedTool.name}</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">{selectedTool.name}</h2>
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-soft">{selectedTool.howTo}</p>
 
             <div className="relative mt-10 flex h-48 w-48 items-center justify-center">
@@ -177,7 +177,7 @@ export function GuidedMode({ onClose, startTool }: { onClose: () => void; startT
 
         {phase === "done" && (
           <div className="flex flex-col items-center pt-16 text-center">
-            <h2 className="text-xl font-semibold text-ink">Nice work</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">Nice work</h2>
             <p className="mt-2 max-w-xs text-sm text-ink-soft">
               However that felt, you took a minute for yourself. That counts.
             </p>

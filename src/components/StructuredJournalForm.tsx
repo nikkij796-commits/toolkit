@@ -28,7 +28,7 @@ export function StructuredJournalForm({
 
   return (
     <div>
-      <h2 className="text-xl font-semibold text-ink">{tool.name}</h2>
+      <h2 className="font-display text-xl font-semibold text-ink">{tool.name}</h2>
       <p className="mt-1 text-sm text-ink-soft">
         {prompts.length}-step framework — logged to your journal when you save.
       </p>

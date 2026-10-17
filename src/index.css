@@ -1,39 +1,39 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-sans: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  /* Headline face, used with restraint — screen titles and modal headers
+     only, never body copy, buttons, or small UI labels. */
+  --font-display: "Fraunces", Georgia, serif;
 
-  /* Calm, low-stimulation palette */
-  --color-paper: #f6f3ec;
-  --color-paper-dim: #efeade;
-  --color-ink: #3c372f;
-  --color-ink-soft: #6b6459;
-  --color-ink-faint: #9b9488;
-
-  /*
-   * Solid accent tones are deliberately deeper than they might look at a
-   * glance — the original lighter values (sage #8ba888, lavender #a79bc4,
-   * etc.) all failed WCAG AA (~2.5:1) against the white text/icons layered
-   * on top of them everywhere: buttons, active nav/pills, the feelings
-   * wheel. These darkened versions clear 4.5:1 against white while keeping
-   * the same hue/softness. The "-soft" tints are unchanged — they're only
-   * ever paired with dark ink text, which already passes comfortably.
+  /* "Dusk Blue" palette: a cooler, quieter direction than the original
+   * warm cream/sage — blue reads as calm and a little more "dusk-lit",
+   * with one warm terracotta accent (clay) kept for contrast/warmth so
+   * the whole app doesn't read as monochrome blue. Every accent below is
+   * still verified at 4.5:1 against white (they're used as SVG/button
+   * fills under white text) the same way the original palette was.
    */
-  --color-sage: #5f7e5c;
-  --color-sage-soft: #dfe8dc;
-  --color-lavender: #7d6ba8;
-  --color-lavender-soft: #e9e4f2;
-  --color-clay: #a7643e;
-  --color-clay-soft: #f2e2d4;
-  --color-sky: #557c8a;
-  --color-sky-soft: #dfeaee;
-  --color-rose: #ad6068;
-  --color-rose-soft: #f1e0e1;
-  --color-amber: #8e7130;
-  --color-amber-soft: #f2e9d3;
-  --color-slate: #6e7786;
-  --color-slate-soft: #e4e6ea;
-  --color-rust: #8a4a2a;
+  --color-paper: #f1f4f6;
+  --color-paper-dim: #e7ebee;
+  --color-ink: #2e3a44;
+  --color-ink-soft: #5c6670;
+  --color-ink-faint: #848b96;
+
+  --color-sage: #3d6c72;
+  --color-sage-soft: #dde8e8;
+  --color-lavender: #5f6bb0;
+  --color-lavender-soft: #e3e3f4;
+  --color-clay: #b2593d;
+  --color-clay-soft: #f3e0d4;
+  --color-sky: #3f6e86;
+  --color-sky-soft: #d9e8ee;
+  --color-rose: #96566a;
+  --color-rose-soft: #f0e0e6;
+  --color-amber: #8a7233;
+  --color-amber-soft: #f1e9d2;
+  --color-slate: #5f6b78;
+  --color-slate-soft: #e2e6ea;
+  --color-rust: #9c4f3a;
 
   /*
    * Card/input backgrounds and hairline borders were hardcoded as
@@ -53,13 +53,13 @@
    * these so they keep 4.5:1 against a dark page background without
    * touching the button colors.
    */
-  --color-sage-text: #5f7e5c;
-  --color-clay-text: #a7643e;
-  --color-rust-text: #8a4a2a;
+  --color-sage-text: #3d6c72;
+  --color-clay-text: #b2593d;
+  --color-rust-text: #9c4f3a;
 
   /* Pressed-state flash colors for the secondary/danger buttons. */
-  --color-sage-soft-active: #c8d8c3;
-  --color-clay-soft-active: #e9cdb5;
+  --color-sage-soft-active: #c3d9d8;
+  --color-clay-soft-active: #e8c9b5;
 }
 
 /*
@@ -67,8 +67,9 @@
  * here is chosen to keep the same 4.5:1 AA contrast standard as the light
  * palette above, verified the same way (relative-luminance contrast
  * checks), not just inverted by eye:
- * - paper/ink/ink-soft/ink-faint: a warm dark base with a warm off-white
- *   ink, keeping the same "calm, low-stimulation" character as light mode.
+ * - paper/ink/ink-soft/ink-faint: a cool dark navy base with a cool
+ *   off-white ink, keeping the same "calm, low-stimulation" character as
+ *   light mode, just following the Dusk Blue direction into the dark.
  * - surface/line: cards and hairlines flip from a white-on-paper wash to a
  *   light-on-dark one, the standard dark-mode elevation pattern.
  * - the "-soft" tints (chip/tag backgrounds, paired with ink text) get
@@ -82,29 +83,29 @@
  */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-paper: #211f1a;
-    --color-paper-dim: #2a2721;
-    --color-ink: #ece7dc;
-    --color-ink-soft: #b7b0a1;
-    --color-ink-faint: #827b6d;
+    --color-paper: #171b20;
+    --color-paper-dim: #1e2329;
+    --color-ink: #e4e9ed;
+    --color-ink-soft: #a9b3bc;
+    --color-ink-faint: #76818c;
 
-    --color-surface: #37332b;
+    --color-surface: #262c33;
     --color-line: #ffffff;
 
-    --color-sage-soft: #3a4a37;
-    --color-lavender-soft: #433a56;
-    --color-clay-soft: #4a3626;
-    --color-sky-soft: #2f4650;
-    --color-rose-soft: #4a2f33;
-    --color-amber-soft: #453a1f;
-    --color-slate-soft: #363a42;
+    --color-sage-soft: #294543;
+    --color-lavender-soft: #353a5c;
+    --color-clay-soft: #4a3324;
+    --color-sky-soft: #253e4d;
+    --color-rose-soft: #45303a;
+    --color-amber-soft: #423a22;
+    --color-slate-soft: #2f363e;
 
-    --color-sage-text: #8fae8a;
-    --color-clay-text: #d99a6e;
-    --color-rust-text: #d98a5e;
+    --color-sage-text: #7fb3b3;
+    --color-clay-text: #e0a07c;
+    --color-rust-text: #e49172;
 
-    --color-sage-soft-active: #46593f;
-    --color-clay-soft-active: #5c4330;
+    --color-sage-soft-active: #345954;
+    --color-clay-soft-active: #5c4030;
   }
 }
 

@@ -211,7 +211,7 @@ export function FeelingsWheelFull({ onClose }: { onClose: () => void }) {
         </button>
       </div>
 
-      <h1 className="px-5 text-xl font-semibold text-ink">{title}</h1>
+      <h1 className="font-display px-5 text-xl font-semibold text-ink">{title}</h1>
 
       <div className="flex-1 overflow-auto px-3 pb-8 flex items-start justify-center">
         {focusedCore ? (

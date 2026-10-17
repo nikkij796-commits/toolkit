@@ -90,7 +90,7 @@ export function ToolDetailSheet({
         ) : (
           <>
             <div className="flex items-start justify-between gap-3">
-              <h2 className="text-xl font-semibold text-ink">{liveTool.name}</h2>
+              <h2 className="font-display text-xl font-semibold text-ink">{liveTool.name}</h2>
               <button
                 onClick={() => toggleFavorite(liveTool.id)}
                 className={`shrink-0 text-2xl leading-none ${isFav ? "text-clay-text" : "text-ink-soft"}`}

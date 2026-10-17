@@ -35,7 +35,7 @@ export function FeelingsWheel() {
     <Card className="p-4">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h2 className="text-lg font-semibold text-ink">Feelings wheel</h2>
+          <h2 className="font-display text-lg font-semibold text-ink">Feelings wheel</h2>
           <p className="mt-1 text-sm text-ink-soft">
             Tap a feeling to narrow it down, or tap any word to log it.
           </p>
