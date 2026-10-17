@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { Intensity, Tool } from "../types";
 import { useAppData } from "../state/AppDataContext";
 import { ScreenHeader } from "../components/ui";
+import { RecommendedWheel } from "../components/RecommendedWheel";
 import { recommendTools } from "../lib/recommend";
 
 const MOOD_OPTIONS: { level: Intensity; label: string }[] = [
@@ -69,24 +70,13 @@ export function HomeScreen({
           I need help now
         </button>
 
-        <h2 className="mt-5 mb-2 text-sm font-medium text-ink-soft">Might help right now</h2>
+        <h2 className="mt-5 mb-1 text-sm font-medium text-ink-soft">Might help right now</h2>
         {recommended.length === 0 ? (
           <p className="text-sm text-ink-soft">Nothing tagged for this mood yet — browse the Toolkit.</p>
         ) : (
-          // Horizontal scroll rather than a vertical list — no matter how
-          // many tools are tagged for a mood, this row never grows the
-          // screen's height, which is what keeps Home on one screen.
-          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
-            {recommended.map((tool) => (
-              <button
-                key={tool.id}
-                onClick={() => onOpenTool(tool)}
-                className="w-32 shrink-0 rounded-2xl bg-surface/70 border border-line/10 p-3 text-left shadow-sm active:scale-[0.97] transition-transform"
-              >
-                <span className="block text-sm font-medium leading-snug text-ink line-clamp-3">{tool.name}</span>
-              </button>
-            ))}
-          </div>
+          // Reset (remount) whenever the mood changes so the wheel doesn't
+          // keep a stale scroll position from the previous list.
+          <RecommendedWheel key={intensity} tools={recommended} onOpen={onOpenTool} />
         )}
 
         {todaysCheckIns.length > 0 && (
