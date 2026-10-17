@@ -51,7 +51,7 @@ export function StructuredJournalForm({
                 onChange={(e) => setAnswers((a) => ({ ...a, [p.key]: e.target.value }))}
                 placeholder={p.placeholder}
                 rows={2}
-                className="mt-1.5 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2.5 text-base"
+                className="mt-1.5 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2.5 text-base"
               />
             </div>
           );

@@ -5,6 +5,7 @@ import { useDialogA11y } from "../hooks/useDialogA11y";
 import { Button } from "./ui";
 import { StructuredJournalForm } from "./StructuredJournalForm";
 import { ToolListBuckets } from "./ToolListBuckets";
+import { PLACEHOLDER_HOWTO } from "../data/toolkitData";
 
 const MOOD_CHIPS: { level: Intensity; label: string }[] = [
   { level: 1, label: "Calm" },
@@ -59,7 +60,7 @@ export function ToolDetailSheet({
         className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-3xl bg-paper p-5 pb-8 outline-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-black/10" />
+        <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-line/10" />
 
         {editing ? (
           <div className="space-y-3">
@@ -67,14 +68,14 @@ export function ToolDetailSheet({
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               aria-label="Tool name"
-              className="w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-lg font-semibold"
+              className="w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-lg font-semibold"
             />
             <textarea
               value={draftHowTo}
               onChange={(e) => setDraftHowTo(e.target.value)}
               rows={5}
               aria-label="How you use this tool"
-              className="w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm"
+              className="w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
               placeholder="How do you use this tool?"
             />
             <div className="flex gap-2">
@@ -92,7 +93,7 @@ export function ToolDetailSheet({
               <h2 className="text-xl font-semibold text-ink">{liveTool.name}</h2>
               <button
                 onClick={() => toggleFavorite(liveTool.id)}
-                className={`shrink-0 text-2xl leading-none ${isFav ? "text-clay" : "text-ink-soft"}`}
+                className={`shrink-0 text-2xl leading-none ${isFav ? "text-clay-text" : "text-ink-soft"}`}
                 aria-label={isFav ? "Unpin" : "Pin"}
                 aria-pressed={isFav}
               >
@@ -100,7 +101,13 @@ export function ToolDetailSheet({
               </button>
             </div>
 
-            <p className="mt-3 whitespace-pre-wrap text-base leading-relaxed text-ink-soft">{liveTool.howTo}</p>
+            <p
+              className={`mt-3 whitespace-pre-wrap text-base leading-relaxed ${
+                liveTool.howTo === PLACEHOLDER_HOWTO ? "italic text-ink-faint" : "text-ink-soft"
+              }`}
+            >
+              {liveTool.howTo}
+            </p>
 
             {liveTool.listBuckets && <ToolListBuckets toolId={liveTool.id} buckets={liveTool.listBuckets} />}
 
@@ -114,7 +121,7 @@ export function ToolDetailSheet({
                     onClick={() => toggleMood(chip.level)}
                     aria-pressed={active}
                     className={`rounded-full px-3 py-1.5 text-sm ${
-                      active ? "bg-sage text-white" : "bg-white/70 border border-black/10 text-ink-soft"
+                      active ? "bg-sage text-white" : "bg-surface/70 border border-line/10 text-ink-soft"
                     }`}
                   >
                     {chip.label}
@@ -151,7 +158,7 @@ export function ToolDetailSheet({
                   removeCustomTool(liveTool.id);
                   onClose();
                 }}
-                className="mt-4 text-sm text-rust"
+                className="mt-4 text-sm text-rust-text"
               >
                 Remove this tool
               </button>

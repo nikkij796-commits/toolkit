@@ -77,7 +77,7 @@ export function FeelingsWheel() {
                 key={sec.name}
                 onClick={() => setOpenSecondary(active ? null : sec.name)}
                 className={`rounded-full px-3.5 py-2 text-sm ${
-                  active ? COLOR_ACTIVE_CLASSES[core.color] : "bg-white/70 border border-black/10 text-ink-soft"
+                  active ? COLOR_ACTIVE_CLASSES[core.color] : "bg-surface/70 border border-line/10 text-ink-soft"
                 }`}
               >
                 {sec.name}
@@ -96,7 +96,7 @@ export function FeelingsWheel() {
                 <button
                   key={word}
                   onClick={() => setLogging(word)}
-                  className="rounded-full bg-paper-dim px-3.5 py-2 text-sm text-ink-soft border border-black/5"
+                  className="rounded-full bg-paper-dim px-3.5 py-2 text-sm text-ink-soft border border-line/5"
                 >
                   {word}
                 </button>

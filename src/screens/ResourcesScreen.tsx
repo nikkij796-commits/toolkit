@@ -44,7 +44,7 @@ export function ResourcesScreen() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Title"
               aria-label="Resource title"
-              className="w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm font-medium"
+              className="w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm font-medium"
             />
             <textarea
               value={body}
@@ -52,7 +52,7 @@ export function ResourcesScreen() {
               placeholder="Notes, a link, anything you want handy"
               aria-label="Resource notes"
               rows={3}
-              className="mt-2 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm"
+              className="mt-2 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
             />
             <div className="mt-2 flex gap-2">
               <Button onClick={submit}>Save</Button>
@@ -93,14 +93,14 @@ function ResourceCard({
           value={draftTitle}
           onChange={(e) => setDraftTitle(e.target.value)}
           aria-label="Resource title"
-          className="w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm font-medium"
+          className="w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm font-medium"
         />
         <textarea
           value={draftBody}
           onChange={(e) => setDraftBody(e.target.value)}
           aria-label="Resource notes"
           rows={3}
-          className="mt-2 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm"
+          className="mt-2 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
         />
         <div className="mt-2 flex gap-2">
           <button

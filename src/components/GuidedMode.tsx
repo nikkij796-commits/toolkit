@@ -117,7 +117,7 @@ export function GuidedMode({ onClose, startTool }: { onClose: () => void; startT
                 <button
                   key={t.id}
                   onClick={() => pickTool(t)}
-                  className="w-full rounded-2xl bg-white/70 border border-black/10 p-4 text-left text-ink font-medium active:scale-[0.99] transition-transform"
+                  className="w-full rounded-2xl bg-surface/70 border border-line/10 p-4 text-left text-ink font-medium active:scale-[0.99] transition-transform"
                 >
                   {t.name}
                 </button>
@@ -133,7 +133,7 @@ export function GuidedMode({ onClose, startTool }: { onClose: () => void; startT
                         <button
                           key={t.id}
                           onClick={() => pickTool(t)}
-                          className="rounded-xl bg-white/60 border border-black/5 p-3 text-left text-sm text-ink"
+                          className="rounded-xl bg-surface/60 border border-line/5 p-3 text-left text-sm text-ink"
                         >
                           {t.name}
                         </button>

@@ -27,7 +27,7 @@ function Bucket({ toolId, bucket }: { toolId: string; bucket: string }) {
             <button
               onClick={() => removeToolListItem(toolId, bucket, item.id)}
               aria-label={`Remove ${item.text}`}
-              className="flex h-5 w-5 items-center justify-center rounded-full text-ink-soft leading-none active:bg-black/10"
+              className="flex h-5 w-5 items-center justify-center rounded-full text-ink-soft leading-none active:bg-line/10"
             >
               ×
             </button>
@@ -46,7 +46,7 @@ function Bucket({ toolId, bucket }: { toolId: string; bucket: string }) {
           onChange={(e) => setDraft(e.target.value)}
           placeholder={`Add to ${bucket.toLowerCase()}`}
           aria-label={`Add to ${bucket}`}
-          className="flex-1 rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm"
+          className="flex-1 rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
         />
         <button
           type="submit"

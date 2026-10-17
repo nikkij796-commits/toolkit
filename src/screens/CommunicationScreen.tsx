@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAppData } from "../state/AppDataContext";
 import { Card, ScreenHeader } from "../components/ui";
+import { PLACEHOLDER_HOWTO } from "../data/toolkitData";
 import type { Tool } from "../types";
 
 function CopyButton({ text }: { text: string }) {
@@ -32,12 +33,16 @@ function CopyButton({ text }: { text: string }) {
 function ScriptCard({ tool, onEdit }: { tool: Tool; onEdit: (tool: Tool, text: string) => void }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(tool.howTo);
+  const isPlaceholder = tool.howTo === PLACEHOLDER_HOWTO;
 
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between gap-2">
         <span className="font-medium text-ink">{tool.name}</span>
-        {!editing && <CopyButton text={tool.howTo} />}
+        {/* Copying the placeholder would silently put "Add your own notes
+            on how you use this tool." on the clipboard instead of an
+            actual script, so there's nothing useful to copy yet. */}
+        {!editing && !isPlaceholder && <CopyButton text={tool.howTo} />}
       </div>
       {editing ? (
         <div className="mt-2">
@@ -45,7 +50,7 @@ function ScriptCard({ tool, onEdit }: { tool: Tool; onEdit: (tool: Tool, text: s
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={3}
-            className="w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
           />
           <div className="mt-2 flex gap-2">
             <button
@@ -64,9 +69,15 @@ function ScriptCard({ tool, onEdit }: { tool: Tool; onEdit: (tool: Tool, text: s
         </div>
       ) : (
         <>
-          <p className="mt-1.5 whitespace-pre-wrap text-base leading-relaxed text-ink-soft">{tool.howTo}</p>
+          <p
+            className={`mt-1.5 whitespace-pre-wrap text-base leading-relaxed ${
+              isPlaceholder ? "italic text-ink-faint" : "text-ink-soft"
+            }`}
+          >
+            {tool.howTo}
+          </p>
           <button onClick={() => setEditing(true)} className="mt-2 text-xs text-ink-soft">
-            Edit script
+            {isPlaceholder ? "Write a script" : "Edit script"}
           </button>
         </>
       )}

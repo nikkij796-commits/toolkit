@@ -34,6 +34,78 @@
   --color-slate: #6e7786;
   --color-slate-soft: #e4e6ea;
   --color-rust: #8a4a2a;
+
+  /*
+   * Card/input backgrounds and hairline borders were hardcoded as
+   * bg-white/NN and border-black/NN throughout the app. Routed through
+   * these tokens instead (same literal values here, so light mode is
+   * pixel-identical) so the dark-mode override below can retheme them.
+   */
+  --color-surface: #ffffff;
+  --color-line: #000000;
+
+  /*
+   * A few accent colors (sage/clay/rust) are also used as plain text
+   * directly on the page background — e.g. the nav's active label, the
+   * favorite star, delete affordances — separately from their use as
+   * button backgrounds (which stay dark for white-text contrast). Same
+   * values as the base accents here; the dark override brightens just
+   * these so they keep 4.5:1 against a dark page background without
+   * touching the button colors.
+   */
+  --color-sage-text: #5f7e5c;
+  --color-clay-text: #a7643e;
+  --color-rust-text: #8a4a2a;
+
+  /* Pressed-state flash colors for the secondary/danger buttons. */
+  --color-sage-soft-active: #c8d8c3;
+  --color-clay-soft-active: #e9cdb5;
+}
+
+/*
+ * Dark mode, following the system setting (no in-app toggle). Every token
+ * here is chosen to keep the same 4.5:1 AA contrast standard as the light
+ * palette above, verified the same way (relative-luminance contrast
+ * checks), not just inverted by eye:
+ * - paper/ink/ink-soft/ink-faint: a warm dark base with a warm off-white
+ *   ink, keeping the same "calm, low-stimulation" character as light mode.
+ * - surface/line: cards and hairlines flip from a white-on-paper wash to a
+ *   light-on-dark one, the standard dark-mode elevation pattern.
+ * - the "-soft" tints (chip/tag backgrounds, paired with ink text) get
+ *   dedicated dark versions — the light pastel tints would fail contrast
+ *   against ink once ink turns light, so each is replaced with a muted
+ *   dark version of the same hue rather than reused as-is.
+ * - sage/clay/rust themselves stay unchanged (still used as button
+ *   backgrounds under white text, which doesn't depend on page theme);
+ *   only the dedicated "-text" variants brighten, for their direct-on-page
+ *   text uses.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #211f1a;
+    --color-paper-dim: #2a2721;
+    --color-ink: #ece7dc;
+    --color-ink-soft: #b7b0a1;
+    --color-ink-faint: #827b6d;
+
+    --color-surface: #37332b;
+    --color-line: #ffffff;
+
+    --color-sage-soft: #3a4a37;
+    --color-lavender-soft: #433a56;
+    --color-clay-soft: #4a3626;
+    --color-sky-soft: #2f4650;
+    --color-rose-soft: #4a2f33;
+    --color-amber-soft: #453a1f;
+    --color-slate-soft: #363a42;
+
+    --color-sage-text: #8fae8a;
+    --color-clay-text: #d99a6e;
+    --color-rust-text: #d98a5e;
+
+    --color-sage-soft-active: #46593f;
+    --color-clay-soft-active: #5c4330;
+  }
 }
 
 html {

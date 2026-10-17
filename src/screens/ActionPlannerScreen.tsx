@@ -36,7 +36,7 @@ export function ActionPlannerScreen() {
 
       <div className="px-5">
         <Card className="p-4">
-          {editingId && <p className="mb-2 text-xs font-medium text-sage">Editing a saved plan</p>}
+          {editingId && <p className="mb-2 text-xs font-medium text-sage-text">Editing a saved plan</p>}
 
           <label htmlFor="planner-title" className="text-xs font-medium text-ink-soft">
             What's this about?
@@ -46,7 +46,7 @@ export function ActionPlannerScreen() {
             value={form.title}
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
             placeholder="e.g. Job interview, a hard conversation..."
-            className="mt-1 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2.5 text-base"
+            className="mt-1 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2.5 text-base"
           />
 
           <div className="mt-4">
@@ -59,7 +59,7 @@ export function ActionPlannerScreen() {
               value={form.intention}
               onChange={(e) => setForm((f) => ({ ...f, intention: e.target.value }))}
               rows={3}
-              className="mt-1.5 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2.5 text-base"
+              className="mt-1.5 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2.5 text-base"
             />
           </div>
 
@@ -73,7 +73,7 @@ export function ActionPlannerScreen() {
               value={form.values}
               onChange={(e) => setForm((f) => ({ ...f, values: e.target.value }))}
               rows={3}
-              className="mt-1.5 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2.5 text-base"
+              className="mt-1.5 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2.5 text-base"
             />
           </div>
 
@@ -87,7 +87,7 @@ export function ActionPlannerScreen() {
               value={form.behavior}
               onChange={(e) => setForm((f) => ({ ...f, behavior: e.target.value }))}
               rows={3}
-              className="mt-1.5 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2.5 text-base"
+              className="mt-1.5 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2.5 text-base"
             />
           </div>
 

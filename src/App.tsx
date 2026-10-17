@@ -34,10 +34,19 @@ function AppShell() {
     <div className="min-h-dvh mx-auto max-w-md">
       <button
         onClick={() => setScreen("launcher")}
-        className="fixed right-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 text-ink-soft shadow-sm border border-black/5"
+        className="fixed right-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-surface/80 text-ink-soft shadow-sm border border-line/5"
         aria-label="Back to app home"
       >
-        ⌂
+        {/* Inline SVG rather than a Unicode glyph (⌂ previously) — that
+            character has no reliable fallback across phone fonts and was
+            rendering as an ambiguous bell-like shape instead of "home". An
+            app-grid icon is unambiguous and renders identically everywhere. */}
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor" />
+          <rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor" />
+          <rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor" />
+          <rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor" />
+        </svg>
       </button>
 
       {screen === "home" && (

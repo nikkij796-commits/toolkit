@@ -90,7 +90,7 @@ export function JournalScreen() {
               setEntryType(e.target.value as EntryType);
               setAnswers({});
             }}
-            className="mt-1 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2.5 text-base text-ink"
+            className="mt-1 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2.5 text-base text-ink"
           >
             {ENTRY_TYPES.map((t) => (
               <option key={t.id} value={t.id}>
@@ -138,7 +138,7 @@ export function JournalScreen() {
                   onChange={(e) => setCustomTag(e.target.value)}
                   placeholder="+ custom tag"
                   aria-label="Add a custom tag"
-                  className="w-full max-w-[160px] rounded-full border border-black/10 bg-white/70 px-3 py-1 text-xs"
+                  className="w-full max-w-[160px] rounded-full border border-line/10 bg-surface/70 px-3 py-1 text-xs"
                 />
               </form>
             </>
@@ -162,7 +162,7 @@ export function JournalScreen() {
                       onChange={(e) => setAnswers((a) => ({ ...a, [p.key]: e.target.value }))}
                       placeholder={p.placeholder}
                       rows={2}
-                      className="mt-1.5 w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2.5 text-base"
+                      className="mt-1.5 w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2.5 text-base"
                     />
                   </div>
                 );

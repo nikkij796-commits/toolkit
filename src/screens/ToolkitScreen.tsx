@@ -77,7 +77,7 @@ export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void
                   onChange={(e) => setAddingName(e.target.value)}
                   placeholder="New tool name"
                   aria-label="New tool name"
-                  className="flex-1 rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm"
+                  className="flex-1 rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
                 />
                 <button type="submit" className="rounded-xl bg-sage text-white px-4 text-sm font-medium">
                   Add

@@ -11,7 +11,7 @@ import type { Category, Intensity, JournalPrompt, Tool } from "../types";
  * how you actually use each tool.
  */
 
-const PLACEHOLDER_HOWTO = "Add your own notes on how you use this tool.";
+export const PLACEHOLDER_HOWTO = "Add your own notes on how you use this tool.";
 
 export const CATEGORIES: Category[] = [
   {
@@ -200,5 +200,3 @@ export const DEFAULT_TOOLS: Tool[] = [
   tool("communication", "Clarifying questions"),
   tool("communication", "Active listening"),
 ];
-
-export { PLACEHOLDER_HOWTO };

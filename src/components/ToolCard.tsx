@@ -15,7 +15,7 @@ export function ToolCard({
 
   return (
     <div
-      className={`w-full rounded-2xl bg-white/70 border border-black/10 shadow-sm flex items-center gap-2 ${
+      className={`w-full rounded-2xl bg-surface/70 border border-line/10 shadow-sm flex items-center gap-2 ${
         compact ? "py-1 pl-3 pr-1" : "py-1 pl-4 pr-1.5"
       }`}
     >
@@ -31,8 +31,8 @@ export function ToolCard({
         onClick={() => toggleFavorite(tool.id)}
         aria-label={isFav ? "Unpin" : "Pin"}
         aria-pressed={isFav}
-        className={`shrink-0 flex h-10 w-10 items-center justify-center rounded-full text-lg leading-none active:bg-black/5 ${
-          isFav ? "text-clay" : "text-ink-soft"
+        className={`shrink-0 flex h-10 w-10 items-center justify-center rounded-full text-lg leading-none active:bg-line/5 ${
+          isFav ? "text-clay-text" : "text-ink-soft"
         }`}
       >
         {isFav ? "★" : "☆"}

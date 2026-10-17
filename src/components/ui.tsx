@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode 
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-2xl bg-white/70 border border-black/10 shadow-sm ${className}`}>{children}</div>
+    <div className={`rounded-2xl bg-surface/70 border border-line/10 shadow-sm ${className}`}>{children}</div>
   );
 }
 
@@ -10,9 +10,9 @@ type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: "bg-sage text-white active:bg-[#4d664b]",
-  secondary: "bg-sage-soft text-ink active:bg-[#c8d8c3]",
-  ghost: "bg-transparent text-ink-soft active:bg-black/5",
-  danger: "bg-clay-soft text-rust active:bg-[#e9cdb5]",
+  secondary: "bg-sage-soft text-ink active:bg-sage-soft-active",
+  ghost: "bg-transparent text-ink-soft active:bg-line/5",
+  danger: "bg-clay-soft text-rust-text active:bg-clay-soft-active",
 };
 
 export function Button({
@@ -33,7 +33,10 @@ export function Button({
 
 export function ScreenHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div className="px-5 pt-6 pb-2">
+    // pr-16 reserves room for the fixed launcher button in the top-right
+    // corner of the app shell — without it, a long title (e.g.
+    // "Post-Therapy Check-In") runs underneath and clips behind it.
+    <div className="pl-5 pr-16 pt-6 pb-2">
       <h1 className="text-2xl font-semibold text-ink">{title}</h1>
       {subtitle && <p className="mt-1 text-sm text-ink-soft">{subtitle}</p>}
     </div>
@@ -49,7 +52,7 @@ export function Pill({
     <button
       aria-pressed={active}
       className={`whitespace-nowrap shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-        active ? "bg-sage text-white" : "bg-white/70 text-ink-soft border border-black/5"
+        active ? "bg-sage text-white" : "bg-surface/70 text-ink-soft border border-line/5"
       }`}
       {...rest}
     >
@@ -91,7 +94,7 @@ export function ConfirmDeleteButton({
         setArmed(true);
         timeoutRef.current = setTimeout(() => setArmed(false), 3000);
       }}
-      className={`${armed ? "font-medium text-rust" : "text-ink-soft"} ${className}`}
+      className={`${armed ? "font-medium text-rust-text" : "text-ink-soft"} ${className}`}
       {...rest}
     >
       {armed ? "Tap again to confirm" : label}

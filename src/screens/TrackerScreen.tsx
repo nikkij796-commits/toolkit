@@ -44,7 +44,7 @@ export function TrackerScreen() {
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm ${
                       log.checked
                         ? "bg-sage border-sage text-white"
-                        : "border-black/15 text-transparent active:bg-black/5"
+                        : "border-line/15 text-transparent active:bg-line/5"
                     }`}
                   >
                     ✓
@@ -57,7 +57,7 @@ export function TrackerScreen() {
                     <div className="flex-1">
                       <span className={`font-medium ${d.isToday ? "text-ink" : "text-ink-soft"}`}>
                         {d.label} {formatDayNumber(d.date)}
-                        {d.isToday && <span className="ml-2 text-xs text-sage">today</span>}
+                        {d.isToday && <span className="ml-2 text-xs text-sage-text">today</span>}
                       </span>
                       {log.toolIds.length > 0 && (
                         <p className="mt-0.5 text-xs text-ink-soft">
@@ -76,7 +76,7 @@ export function TrackerScreen() {
                       onChange={(e) => updateDayLog(d.date, { note: e.target.value })}
                       placeholder="A short note about the day (optional)"
                       rows={2}
-                      className="w-full rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm"
+                      className="w-full rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
                     />
 
                     {checkInsForDate(d.date).length > 0 && (
@@ -115,7 +115,7 @@ export function TrackerScreen() {
                             onClick={() => toggleDayTool(d.date, t.id)}
                             aria-pressed={active}
                             className={`rounded-full px-3 py-1.5 text-xs ${
-                              active ? "bg-sage text-white" : "bg-white/70 border border-black/10 text-ink-soft"
+                              active ? "bg-sage text-white" : "bg-surface/70 border border-line/10 text-ink-soft"
                             }`}
                           >
                             {t.name}
