@@ -5,7 +5,7 @@ import { Button, Card, ConfirmDeleteButton, ScreenHeader } from "../components/u
 
 const BLANK = { title: "", intention: "", values: "", behavior: "" };
 
-export function ActionPlannerScreen() {
+export function ActionPlannerScreen({ onBack }: { onBack?: () => void }) {
   const { actionPlans, addActionPlan, updateActionPlan, deleteActionPlan } = useAppData();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(BLANK);
@@ -31,8 +31,13 @@ export function ActionPlannerScreen() {
   };
 
   return (
-    <div className="pb-28">
-      <ScreenHeader title="Action Planner" subtitle="Plan how you'll handle it, on your own terms." />
+    <div className="pb-10">
+      <ScreenHeader
+        title="Action Planner"
+        subtitle="Plan how you'll handle it, on your own terms."
+        onBack={onBack}
+        backLabel="More"
+      />
 
       <div className="px-5">
         <Card className="p-4">

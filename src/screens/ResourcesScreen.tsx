@@ -3,7 +3,7 @@ import { useAppData } from "../state/AppDataContext";
 import { FeelingsWheel } from "../components/FeelingsWheel";
 import { Button, Card, ConfirmDeleteButton, ScreenHeader } from "../components/ui";
 
-export function ResourcesScreen() {
+export function ResourcesScreen({ onBack }: { onBack?: () => void }) {
   const { resources, addResource, updateResource, deleteResource } = useAppData();
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
@@ -18,8 +18,8 @@ export function ResourcesScreen() {
   };
 
   return (
-    <div className="pb-28">
-      <ScreenHeader title="Resources" subtitle="Reference material, on your terms." />
+    <div className="pb-10">
+      <ScreenHeader title="Resources" subtitle="Reference material, on your terms." onBack={onBack} backLabel="More" />
 
       <div className="px-5 space-y-4">
         <FeelingsWheel />

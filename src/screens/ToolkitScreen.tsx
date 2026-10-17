@@ -46,12 +46,12 @@ export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void
 
         {!showFavOnly && <p className="mt-3 text-xs text-ink-soft">{activeCategory.blurb}</p>}
 
-        <div className="mt-4 space-y-2">
-          {list.length === 0 && (
-            <p className="mt-6 text-center text-sm text-ink-soft">
-              {showFavOnly ? "Pin a tool to see it here." : "Nothing here yet."}
-            </p>
-          )}
+        {list.length === 0 && (
+          <p className="mt-6 text-center text-sm text-ink-soft">
+            {showFavOnly ? "Pin a tool to see it here." : "Nothing here yet."}
+          </p>
+        )}
+        <div className="mt-4 grid grid-cols-2 gap-2">
           {list.map((tool) => (
             <ToolCard key={tool.id} tool={tool} onOpen={onOpenTool} />
           ))}

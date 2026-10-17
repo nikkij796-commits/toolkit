@@ -11,7 +11,7 @@ const QUESTIONS: { key: "feeling" | "needsDecompress" | "decompressPlan" | "noTi
 
 const BLANK = { feeling: "", needsDecompress: "", decompressPlan: "", noTimeReasons: "" };
 
-export function PostTherapyCheckInScreen() {
+export function PostTherapyCheckInScreen({ onBack }: { onBack?: () => void }) {
   const { postTherapyCheckIns, addPostTherapyCheckIn, deletePostTherapyCheckIn } = useAppData();
   const [form, setForm] = useState(BLANK);
 
@@ -22,8 +22,13 @@ export function PostTherapyCheckInScreen() {
   };
 
   return (
-    <div className="pb-28">
-      <ScreenHeader title="Post-Therapy Check-In" subtitle="A few minutes with yourself before you move on." />
+    <div className="pb-10">
+      <ScreenHeader
+        title="Post-Therapy Check-In"
+        subtitle="A few minutes with yourself before you move on."
+        onBack={onBack}
+        backLabel="More"
+      />
 
       <div className="px-5">
         <Card className="p-4">

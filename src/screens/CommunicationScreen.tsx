@@ -85,13 +85,13 @@ function ScriptCard({ tool, onEdit }: { tool: Tool; onEdit: (tool: Tool, text: s
   );
 }
 
-export function CommunicationScreen() {
+export function CommunicationScreen({ onBack }: { onBack?: () => void }) {
   const { toolsByCategory, updateTool } = useAppData();
   const scripts = toolsByCategory("communication");
 
   return (
-    <div className="pb-28">
-      <ScreenHeader title="Communication" subtitle="Scripts to pull up mid-conversation." />
+    <div className="pb-10">
+      <ScreenHeader title="Communication" subtitle="Scripts to pull up mid-conversation." onBack={onBack} backLabel="More" />
       <div className="px-5 space-y-2">
         {scripts.map((tool) => (
           <ScriptCard key={tool.id} tool={tool} onEdit={(t, text) => updateTool(t.id, { howTo: text })} />

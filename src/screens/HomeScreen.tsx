@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Intensity, Tool } from "../types";
 import { useAppData } from "../state/AppDataContext";
-import { IntensitySlider, INTENSITY_LABELS } from "../components/IntensitySlider";
-import { ToolCard } from "../components/ToolCard";
-import { Button, Card, ScreenHeader } from "../components/ui";
+import { ScreenHeader } from "../components/ui";
 import { recommendTools } from "../lib/recommend";
+
+const MOOD_OPTIONS: { level: Intensity; label: string }[] = [
+  { level: 1, label: "Calm" },
+  { level: 2, label: "Stressed" },
+  { level: 3, label: "Overwhelming" },
+];
 
 export function HomeScreen({
   onOpenTool,
@@ -13,116 +17,82 @@ export function HomeScreen({
   onOpenTool: (tool: Tool) => void;
   onStartGuided: () => void;
 }) {
-  const { tools, favorites, addCheckIn, checkIns, checkInsForDate, todayKeyStr } = useAppData();
+  const { tools, favorites, addCheckIn, checkInsForDate, todayKeyStr } = useAppData();
   const [intensity, setIntensity] = useState<Intensity>(2);
   const [logged, setLogged] = useState(false);
-  const [showAllRecommended, setShowAllRecommended] = useState(false);
 
   const recommended = useMemo(() => recommendTools(tools, intensity, favorites), [tools, intensity, favorites]);
-  const lastCheckIn = checkIns[0];
   const todaysCheckIns = checkInsForDate(todayKeyStr);
 
-  // Collapse back to the short list whenever the mood changes, so "show
-  // more" doesn't carry over to a differently-sized recommendation set.
-  useEffect(() => setShowAllRecommended(false), [intensity]);
-
-  const VISIBLE_RECOMMENDED = 6;
-  const visibleRecommended = showAllRecommended ? recommended : recommended.slice(0, VISIBLE_RECOMMENDED);
-  const hiddenRecommendedCount = recommended.length - visibleRecommended.length;
+  // Tapping a mood both selects it (driving the recommendations below) and
+  // logs a check-in in one step — no separate slider + "Log" button, so
+  // the whole screen stays short enough to fit without scrolling.
+  const selectMood = (level: Intensity) => {
+    setIntensity(level);
+    addCheckIn({ intensity: level });
+    setLogged(true);
+    setTimeout(() => setLogged(false), 1500);
+  };
 
   return (
-    <div className="pb-28">
-      <ScreenHeader title="How are you feeling?" subtitle="A quick check-in, just for you." />
+    <div className="pb-24">
+      <ScreenHeader title="How are you feeling?" subtitle="Tap a mood to check in." />
 
       <div className="px-5">
-        <Card className="p-5">
-          <IntensitySlider value={intensity} onChange={setIntensity} />
-          <Button
-            className="mt-5 w-full"
-            variant={logged ? "secondary" : "primary"}
-            aria-live="polite"
-            onClick={() => {
-              addCheckIn({ intensity });
-              setLogged(true);
-              setTimeout(() => setLogged(false), 2000);
-            }}
-          >
-            {logged ? "Logged ✓" : "Log this check-in"}
-          </Button>
-        </Card>
-
-        {lastCheckIn && (
-          <p className="mt-3 text-center text-xs text-ink-soft">
-            Last check-in {new Date(lastCheckIn.timestamp).toLocaleString([], {
-              weekday: "short",
-              hour: "numeric",
-              minute: "2-digit",
-            })}
-          </p>
-        )}
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-ink-soft">Mood</p>
+          {logged && (
+            <span className="text-xs text-sage-text" aria-live="polite">
+              Logged ✓
+            </span>
+          )}
+        </div>
+        <div className="mt-2 flex gap-2">
+          {MOOD_OPTIONS.map((opt) => (
+            <button
+              key={opt.level}
+              onClick={() => selectMood(opt.level)}
+              aria-pressed={intensity === opt.level}
+              className={`flex-1 rounded-xl py-3 text-sm font-medium transition-colors ${
+                intensity === opt.level ? "bg-sage text-white" : "bg-surface/70 border border-line/10 text-ink-soft"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
 
         <button
           onClick={onStartGuided}
-          className="mt-6 w-full rounded-2xl bg-lavender text-white py-4 text-base font-medium shadow-sm active:opacity-90"
+          className="mt-4 w-full rounded-2xl bg-lavender text-white py-4 text-base font-medium shadow-sm active:opacity-90"
         >
           I need help now
         </button>
 
-        <h2 className="mt-8 mb-3 text-sm font-medium text-ink-soft">
-          Might help right now
-        </h2>
-        <div className="space-y-2">
-          {visibleRecommended.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} onOpen={onOpenTool} />
-          ))}
-        </div>
-        {hiddenRecommendedCount > 0 ? (
-          <button
-            onClick={() => setShowAllRecommended(true)}
-            className="mt-2 w-full rounded-xl py-2.5 text-center text-sm text-ink-soft active:bg-line/5"
-          >
-            Show {hiddenRecommendedCount} more
-          </button>
+        <h2 className="mt-5 mb-2 text-sm font-medium text-ink-soft">Might help right now</h2>
+        {recommended.length === 0 ? (
+          <p className="text-sm text-ink-soft">Nothing tagged for this mood yet — browse the Toolkit.</p>
         ) : (
-          showAllRecommended &&
-          recommended.length > VISIBLE_RECOMMENDED && (
-            <button
-              onClick={() => setShowAllRecommended(false)}
-              className="mt-2 w-full rounded-xl py-2.5 text-center text-sm text-ink-soft active:bg-line/5"
-            >
-              Show less
-            </button>
-          )
+          // Horizontal scroll rather than a vertical list — no matter how
+          // many tools are tagged for a mood, this row never grows the
+          // screen's height, which is what keeps Home on one screen.
+          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
+            {recommended.map((tool) => (
+              <button
+                key={tool.id}
+                onClick={() => onOpenTool(tool)}
+                className="w-32 shrink-0 rounded-2xl bg-surface/70 border border-line/10 p-3 text-left shadow-sm active:scale-[0.97] transition-transform"
+              >
+                <span className="block text-sm font-medium leading-snug text-ink line-clamp-3">{tool.name}</span>
+              </button>
+            ))}
+          </div>
         )}
 
         {todaysCheckIns.length > 0 && (
-          <>
-            <h2 className="mt-8 mb-3 text-sm font-medium text-ink-soft">Today</h2>
-            <Card className="p-2">
-              {todaysCheckIns.map((c, i) => (
-                <div
-                  key={c.id}
-                  className={`flex items-center justify-between gap-3 px-3 py-2.5 ${
-                    i > 0 ? "border-t border-line/5" : ""
-                  }`}
-                >
-                  <div>
-                    <span className="text-sm text-ink">
-                      {c.note ? c.note : INTENSITY_LABELS[c.intensity]}
-                    </span>
-                    {c.note && (
-                      <span className="ml-2 text-xs text-ink-soft">
-                        {c.strength ? `${c.strength}/5` : INTENSITY_LABELS[c.intensity]}
-                      </span>
-                    )}
-                  </div>
-                  <span className="shrink-0 text-xs text-ink-soft">
-                    {new Date(c.timestamp).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
-                  </span>
-                </div>
-              ))}
-            </Card>
-          </>
+          <p className="mt-4 text-center text-xs text-ink-soft">
+            {todaysCheckIns.length} check-in{todaysCheckIns.length === 1 ? "" : "s"} today
+          </p>
         )}
       </div>
     </div>

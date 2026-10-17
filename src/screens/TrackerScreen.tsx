@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAppData } from "../state/AppDataContext";
 import { currentWeekDates, formatDayNumber } from "../lib/week";
 import { Card, ScreenHeader } from "../components/ui";
-import { INTENSITY_LABELS } from "../components/IntensitySlider";
+import { INTENSITY_LABELS } from "../lib/intensityLabels";
 import type { Tool } from "../types";
 
 export function TrackerScreen() {

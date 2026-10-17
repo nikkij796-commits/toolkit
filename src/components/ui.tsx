@@ -31,12 +31,26 @@ export function Button({
   );
 }
 
-export function ScreenHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+export function ScreenHeader({
+  title,
+  subtitle,
+  onBack,
+  backLabel = "Back",
+}: {
+  title: string;
+  subtitle?: string;
+  /** When set, renders a "‹ backLabel" link above the title — used by
+   * screens reached from the More list, which aren't on the tab bar. */
+  onBack?: () => void;
+  backLabel?: string;
+}) {
   return (
-    // pr-16 reserves room for the fixed launcher button in the top-right
-    // corner of the app shell — without it, a long title (e.g.
-    // "Post-Therapy Check-In") runs underneath and clips behind it.
-    <div className="pl-5 pr-16 pt-6 pb-2">
+    <div className="px-5 pt-6 pb-2">
+      {onBack && (
+        <button onClick={onBack} className="mb-1 -ml-1 px-1 text-sm text-ink-soft">
+          ‹ {backLabel}
+        </button>
+      )}
       <h1 className="text-2xl font-semibold text-ink">{title}</h1>
       {subtitle && <p className="mt-1 text-sm text-ink-soft">{subtitle}</p>}
     </div>
