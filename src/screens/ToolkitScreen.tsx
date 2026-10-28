@@ -14,6 +14,7 @@ export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void
   const [addingName, setAddingName] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const pillRowRef = useRef<HTMLDivElement>(null);
 
   // Drives the slide-over transition between two category panels — the
   // pill row above never moves, only this content area does. `phase`
@@ -32,6 +33,16 @@ export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void
     return () => cancelAnimationFrame(raf);
   }, [slide]);
 
+  // Keeps the newly-active pill in view in the horizontally-scrolling pill
+  // strip — the strip itself never slides with the content (per design),
+  // but on a long category name it can scroll several pills wide, so
+  // without this the active pill can end up scrolled out of sight.
+  const scrollPillIntoView = (id: string) => {
+    const row = pillRowRef.current;
+    const el = row?.querySelector<HTMLElement>(`[data-cat-id="${id}"]`);
+    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+  };
+
   const goToCategory = (nextCat: CategoryId) => {
     if (slide) return;
     if (showFavOnly) {
@@ -39,6 +50,7 @@ export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void
       // slide from, so just switch straight to it.
       setShowFavOnly(false);
       setActiveCat(nextCat);
+      scrollPillIntoView(nextCat);
       return;
     }
     if (nextCat === activeCat) return;
@@ -46,6 +58,7 @@ export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void
     const toIndex = categories.findIndex((c) => c.id === nextCat);
     setPhase("start");
     setSlide({ from: activeCat, to: nextCat, dir: toIndex > fromIndex ? 1 : -1 });
+    scrollPillIntoView(nextCat);
   };
 
   const handleSlideEnd = () => {
@@ -110,12 +123,24 @@ export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void
 
       <div className="px-5">
         <div className="relative -mx-5">
-          <div className="flex gap-2 overflow-x-auto pb-1 px-5">
-            <Pill active={showFavOnly} onClick={() => setShowFavOnly((v) => !v)}>
+          <div ref={pillRowRef} className="flex gap-2 overflow-x-auto pb-1 px-5">
+            <Pill
+              data-cat-id="favorites"
+              active={showFavOnly}
+              onClick={() => {
+                setShowFavOnly((v) => !v);
+                scrollPillIntoView("favorites");
+              }}
+            >
               ★ Favorites
             </Pill>
             {categories.map((c) => (
-              <Pill key={c.id} active={!showFavOnly && activeCat === c.id} onClick={() => goToCategory(c.id)}>
+              <Pill
+                key={c.id}
+                data-cat-id={c.id}
+                active={!showFavOnly && activeCat === c.id}
+                onClick={() => goToCategory(c.id)}
+              >
                 {c.name}
               </Pill>
             ))}
