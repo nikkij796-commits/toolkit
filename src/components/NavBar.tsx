@@ -6,6 +6,7 @@ export type ScreenId =
   | "more"
   | "planner"
   | "posttherapy"
+  | "morningcheckin"
   | "communication"
   | "resources";
 

@@ -140,6 +140,11 @@ export const DEFAULT_TOOLS: Tool[] = [
       "Use this when you're anxious about something coming up. Name your intention, your values, and the specific behavior you'll commit to — so you're measuring yourself against your own compass instead of waiting for someone else's approval. Save it, and come back to update your thinking as the situation gets closer or changes.",
     opensScreen: "planner",
   }),
+  tool("predicting", "Morning Check-In", {
+    howTo:
+      "A few minutes before the day gets going. Name today's critical tasks, protect 30 minutes for yourself, and get ahead of where low self-esteem might show up — so you've already got a plan for it instead of getting caught off guard.",
+    opensScreen: "morningcheckin",
+  }),
 
   // 2. Identifying & Feeling
   tool("identifying", "Meditation", { id: "identifying-reiki", guidedSeconds: 36 * 60, moods: MOODS_IDENTIFYING }),

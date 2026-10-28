@@ -8,6 +8,7 @@ import { JournalScreen } from "./screens/JournalScreen";
 import { MoreScreen } from "./screens/MoreScreen";
 import { ActionPlannerScreen } from "./screens/ActionPlannerScreen";
 import { PostTherapyCheckInScreen } from "./screens/PostTherapyCheckInScreen";
+import { MorningCheckInScreen } from "./screens/MorningCheckInScreen";
 import { CommunicationScreen } from "./screens/CommunicationScreen";
 import { ResourcesScreen } from "./screens/ResourcesScreen";
 import { ToolDetailSheet } from "./components/ToolDetailSheet";
@@ -17,7 +18,7 @@ import type { Tool } from "./types";
 // Screens reached via the More list rather than the tab bar — like a
 // pushed detail view in a native app, they hide the tab bar and rely on
 // their own "‹ More" link to go back instead.
-const MORE_SUB_SCREENS: ScreenId[] = ["planner", "posttherapy", "communication", "resources"];
+const MORE_SUB_SCREENS: ScreenId[] = ["planner", "posttherapy", "morningcheckin", "communication", "resources"];
 
 function AppShell() {
   const [screen, setScreen] = useState<ScreenId>("home");
@@ -44,6 +45,7 @@ function AppShell() {
       {screen === "more" && <MoreScreen onOpen={setScreen} />}
       {screen === "planner" && <ActionPlannerScreen onBack={backToMore} />}
       {screen === "posttherapy" && <PostTherapyCheckInScreen onBack={backToMore} />}
+      {screen === "morningcheckin" && <MorningCheckInScreen onBack={backToMore} />}
       {screen === "communication" && <CommunicationScreen onBack={backToMore} />}
       {screen === "resources" && <ResourcesScreen onBack={backToMore} />}
 

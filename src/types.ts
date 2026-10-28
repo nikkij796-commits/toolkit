@@ -134,6 +134,21 @@ export interface PostTherapyCheckIn {
   noTimeReasons: string;
 }
 
+/**
+ * A dated, write-once morning check-in — same spirit as PostTherapyCheckIn
+ * (a daily snapshot, not something you go back and edit), just for
+ * starting the day: today's critical tasks, personal time, and a
+ * heads-up on where low self-esteem might show up and what to do about it.
+ */
+export interface MorningCheckIn {
+  id: string;
+  createdAt: string; // ISO
+  criticalTasks: string;
+  personalTime: string;
+  insecurityMoments: string;
+  insecurityPlan: string;
+}
+
 export interface ToolEdits {
   [toolId: string]: Partial<Pick<Tool, "name" | "howTo" | "guidedSteps" | "guidedSeconds" | "moods">>;
 }

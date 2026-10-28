@@ -8,6 +8,7 @@ import type {
   CustomTool,
   DayLog,
   JournalEntry,
+  MorningCheckIn,
   PostTherapyCheckIn,
   Resource,
   Tool,
@@ -78,6 +79,10 @@ interface AppDataValue {
   postTherapyCheckIns: PostTherapyCheckIn[];
   addPostTherapyCheckIn: (checkIn: Omit<PostTherapyCheckIn, "id" | "createdAt">) => void;
   deletePostTherapyCheckIn: (id: string) => void;
+
+  morningCheckIns: MorningCheckIn[];
+  addMorningCheckIn: (checkIn: Omit<MorningCheckIn, "id" | "createdAt">) => void;
+  deleteMorningCheckIn: (id: string) => void;
 }
 
 const AppDataContext = createContext<AppDataValue | null>(null);
@@ -108,6 +113,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const [actionPlans, setActionPlans] = useLocalStorage<ActionPlan[]>("anxiety-toolkit:action-plans", []);
   const [postTherapyCheckIns, setPostTherapyCheckIns] = useLocalStorage<PostTherapyCheckIn[]>(
     "anxiety-toolkit:post-therapy-checkins",
+    [],
+  );
+  const [morningCheckIns, setMorningCheckIns] = useLocalStorage<MorningCheckIn[]>(
+    "anxiety-toolkit:morning-checkins",
     [],
   );
 
@@ -240,6 +249,14 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setPostTherapyCheckIns((prev) => prev.filter((c) => c.id !== id));
   };
 
+  const addMorningCheckIn: AppDataValue["addMorningCheckIn"] = (checkIn) => {
+    setMorningCheckIns((prev) => [{ ...checkIn, id: newId(), createdAt: new Date().toISOString() }, ...prev]);
+  };
+
+  const deleteMorningCheckIn = (id: string) => {
+    setMorningCheckIns((prev) => prev.filter((c) => c.id !== id));
+  };
+
   const value: AppDataValue = {
     tools,
     toolsByCategory,
@@ -276,6 +293,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     postTherapyCheckIns,
     addPostTherapyCheckIn,
     deletePostTherapyCheckIn,
+    morningCheckIns,
+    addMorningCheckIn,
+    deleteMorningCheckIn,
   };
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;

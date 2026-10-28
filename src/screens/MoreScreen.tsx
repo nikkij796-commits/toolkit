@@ -5,6 +5,7 @@ const LINKS: { id: ScreenId; label: string; blurb: string; icon: string }[] = [
   { id: "communication", label: "Talk", blurb: "Conversation scripts", icon: "◐" },
   { id: "resources", label: "Resources", blurb: "Feelings wheel & notes", icon: "✺" },
   { id: "planner", label: "Action Planner", blurb: "Plan how you'll handle it", icon: "✦" },
+  { id: "morningcheckin", label: "Morning Check-In", blurb: "Start the day with a plan", icon: "☀" },
   { id: "posttherapy", label: "Post-Therapy Check-In", blurb: "Decompress after a session", icon: "☾" },
 ];
 
