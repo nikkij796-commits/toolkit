@@ -46,8 +46,21 @@ function CategoryPage({
   const cat = categories.find((c) => c.id === catId)!;
 
   useEffect(() => {
-    const el = pillRowRef.current?.querySelector<HTMLElement>(`[data-cat-id="${catId}"]`);
-    el?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "nearest" });
+    const row = pillRowRef.current;
+    const el = row?.querySelector<HTMLElement>(`[data-cat-id="${catId}"]`);
+    if (!row || !el) return;
+    // Deliberately not scrollIntoView: `overflow: hidden` ancestors (like
+    // the outer sliding track) still count as scrollable targets for it,
+    // so it was also nudging the track's own scrollLeft — fighting the
+    // live drag transform and compounding into a visible glitch on swipe.
+    // Adjusting this row's scrollLeft directly touches only this element.
+    const rowRect = row.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    if (elRect.left < rowRect.left) {
+      row.scrollLeft -= rowRect.left - elRect.left;
+    } else if (elRect.right > rowRect.right) {
+      row.scrollLeft += elRect.right - rowRect.right;
+    }
   }, [catId]);
 
   return (
