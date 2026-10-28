@@ -3,6 +3,7 @@ import type { FeelingColor } from "../types";
 import { FEELINGS_WHEEL } from "../data/feelingsWheel";
 import { donutSegmentPath, polarToCartesian, radialLabelTransform, splitAngle } from "../lib/wheelGeometry";
 import { useDialogA11y } from "../hooks/useDialogA11y";
+import { useSwipeDismiss } from "../hooks/useSwipeDismiss";
 import { LogFeelingSheet } from "./LogFeelingSheet";
 
 const FILL: Record<FeelingColor, string> = {
@@ -188,6 +189,7 @@ export function FeelingsWheelFull({ onClose }: { onClose: () => void }) {
 
   const title = useMemo(() => focusedCore ?? "Feelings wheel", [focusedCore]);
   const dialogRef = useDialogA11y(onClose);
+  const swipeBack = useSwipeDismiss({ onDismiss: onClose, axis: "x", edgeZone: 28 });
 
   return (
     <div
@@ -197,6 +199,9 @@ export function FeelingsWheelFull({ onClose }: { onClose: () => void }) {
       aria-label="Feelings wheel"
       tabIndex={-1}
       className="fixed inset-0 z-50 flex flex-col bg-paper outline-none"
+      style={swipeBack.style}
+      onTransitionEnd={swipeBack.onTransitionEnd}
+      {...swipeBack.handlers}
     >
       <div className="flex items-center justify-between px-5 pt-6 pb-2">
         {focusedCore ? (

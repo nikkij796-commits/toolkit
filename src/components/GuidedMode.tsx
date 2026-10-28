@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Intensity, Tool } from "../types";
 import { useAppData } from "../state/AppDataContext";
 import { useDialogA11y } from "../hooks/useDialogA11y";
+import { useSwipeDismiss } from "../hooks/useSwipeDismiss";
 import { recommendTools } from "../lib/recommend";
 import { Button, Pill } from "./ui";
 
@@ -69,6 +70,10 @@ export function GuidedMode({ onClose, startTool }: { onClose: () => void; startT
   const progress = totalSeconds > 0 ? 1 - secondsLeft / totalSeconds : 1;
 
   const dialogRef = useDialogA11y(onClose);
+  // Native iOS edge-swipe-back: dragging in from the left edge slides this
+  // full-screen session away, revealing the screen it was opened from
+  // (already mounted underneath), same as tapping Close.
+  const swipeBack = useSwipeDismiss({ onDismiss: onClose, axis: "x", edgeZone: 28 });
 
   return (
     <div
@@ -78,6 +83,9 @@ export function GuidedMode({ onClose, startTool }: { onClose: () => void; startT
       aria-label="Guided coping session"
       tabIndex={-1}
       className="fixed inset-0 z-50 flex flex-col bg-paper outline-none"
+      style={swipeBack.style}
+      onTransitionEnd={swipeBack.onTransitionEnd}
+      {...swipeBack.handlers}
     >
       <div className="flex items-center justify-between px-5 pt-6">
         <span className="text-sm text-ink-soft">

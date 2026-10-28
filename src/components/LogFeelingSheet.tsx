@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Intensity } from "../types";
 import { useAppData } from "../state/AppDataContext";
 import { useDialogA11y } from "../hooks/useDialogA11y";
+import { useSwipeDismiss } from "../hooks/useSwipeDismiss";
 import { Button } from "./ui";
 
 // Coarse bucket for the required, app-wide `intensity` field — feeling logs
@@ -17,6 +18,7 @@ export function LogFeelingSheet({ word, onClose }: { word: string; onClose: () =
   const { addCheckIn } = useAppData();
   const [strength, setStrength] = useState(3);
   const dialogRef = useDialogA11y(onClose);
+  const swipeDown = useSwipeDismiss({ onDismiss: onClose, axis: "y", measureRef: dialogRef });
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/30" onClick={onClose}>
@@ -27,9 +29,13 @@ export function LogFeelingSheet({ word, onClose }: { word: string; onClose: () =
         aria-label={`Log feeling: ${word}`}
         tabIndex={-1}
         className="w-full max-w-md rounded-t-3xl bg-paper p-5 pb-8 outline-none"
+        style={swipeDown.style}
+        onTransitionEnd={swipeDown.onTransitionEnd}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-line/10" />
+        <div className="-mx-5 -mt-5 flex justify-center px-5 pt-5 pb-4" {...swipeDown.handlers}>
+          <div className="h-1.5 w-10 rounded-full bg-line/10" />
+        </div>
         <h2 className="font-display text-lg font-semibold text-ink">Feeling {word.toLowerCase()}</h2>
         <p className="mt-1 text-sm text-ink-soft">How strong is it right now?</p>
         <div className="mt-4">

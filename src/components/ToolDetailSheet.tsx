@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Intensity, Tool } from "../types";
 import { useAppData } from "../state/AppDataContext";
 import { useDialogA11y } from "../hooks/useDialogA11y";
+import { useSwipeDismiss } from "../hooks/useSwipeDismiss";
 import { Button } from "./ui";
 import { StructuredJournalForm } from "./StructuredJournalForm";
 import { ToolListBuckets } from "./ToolListBuckets";
@@ -48,6 +49,10 @@ export function ToolDetailSheet({
   };
 
   const dialogRef = useDialogA11y(onClose);
+  // Grab-handle drag: the native iOS pull-down-to-dismiss gesture for a
+  // sheet. Scoped to the handle's touch zone rather than the whole sheet
+  // so it never fights scrolling or tapping the form controls below it.
+  const swipeDown = useSwipeDismiss({ onDismiss: onClose, axis: "y", measureRef: dialogRef });
 
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/30" onClick={onClose}>
@@ -58,9 +63,13 @@ export function ToolDetailSheet({
         aria-label={`${liveTool.name} details`}
         tabIndex={-1}
         className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-3xl bg-paper p-5 pb-8 outline-none"
+        style={swipeDown.style}
+        onTransitionEnd={swipeDown.onTransitionEnd}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-line/10" />
+        <div className="-mx-5 -mt-5 flex justify-center px-5 pt-5 pb-4" {...swipeDown.handlers}>
+          <div className="h-1.5 w-10 rounded-full bg-line/10" />
+        </div>
 
         {editing ? (
           <div className="space-y-3">

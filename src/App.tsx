@@ -13,6 +13,7 @@ import { CommunicationScreen } from "./screens/CommunicationScreen";
 import { ResourcesScreen } from "./screens/ResourcesScreen";
 import { ToolDetailSheet } from "./components/ToolDetailSheet";
 import { GuidedMode } from "./components/GuidedMode";
+import { SwipeBackScreen } from "./components/SwipeBackScreen";
 import type { Tool } from "./types";
 
 // Screens reached via the More list rather than the tab bar — like a
@@ -43,11 +44,15 @@ function AppShell() {
       {screen === "tracker" && <TrackerScreen />}
       {screen === "journal" && <JournalScreen />}
       {screen === "more" && <MoreScreen onOpen={setScreen} />}
-      {screen === "planner" && <ActionPlannerScreen onBack={backToMore} />}
-      {screen === "posttherapy" && <PostTherapyCheckInScreen onBack={backToMore} />}
-      {screen === "morningcheckin" && <MorningCheckInScreen onBack={backToMore} />}
-      {screen === "communication" && <CommunicationScreen onBack={backToMore} />}
-      {screen === "resources" && <ResourcesScreen onBack={backToMore} />}
+      {MORE_SUB_SCREENS.includes(screen) && (
+        <SwipeBackScreen onBack={backToMore} background={<MoreScreen onOpen={setScreen} />}>
+          {screen === "planner" && <ActionPlannerScreen onBack={backToMore} />}
+          {screen === "posttherapy" && <PostTherapyCheckInScreen onBack={backToMore} />}
+          {screen === "morningcheckin" && <MorningCheckInScreen onBack={backToMore} />}
+          {screen === "communication" && <CommunicationScreen onBack={backToMore} />}
+          {screen === "resources" && <ResourcesScreen onBack={backToMore} />}
+        </SwipeBackScreen>
+      )}
 
       {!MORE_SUB_SCREENS.includes(screen) && <NavBar current={screen} onChange={setScreen} />}
 
