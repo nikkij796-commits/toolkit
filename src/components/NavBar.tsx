@@ -24,7 +24,11 @@ const TABS: { id: ScreenId; label: string; icon: string }[] = [
 
 export function NavBar({ current, onChange }: { current: ScreenId; onChange: (id: ScreenId) => void }) {
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-30 bg-paper/95 backdrop-blur border-t border-line/5 pb-[env(safe-area-inset-bottom)]">
+    // viewport-fit=cover (index.html) is what makes env(safe-area-inset-bottom)
+    // resolve to a real value on iPhone instead of 0 — without it this padding
+    // was a no-op and the bar sat right against the home-indicator swipe area.
+    // The extra 6px on top of the inset gives a little more breathing room.
+    <nav className="fixed bottom-0 inset-x-0 z-30 bg-paper/95 backdrop-blur border-t border-line/5 pb-[calc(env(safe-area-inset-bottom)+6px)]">
       <div className="mx-auto max-w-md grid grid-cols-5">
         {TABS.map((tab) => {
           const active = tab.id === current;
