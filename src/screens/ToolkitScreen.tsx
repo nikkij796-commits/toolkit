@@ -1,120 +1,258 @@
 import { useEffect, useRef, useState, type TouchEvent } from "react";
-import type { CategoryId, Tool } from "../types";
+import type { Category, CategoryId, Tool } from "../types";
 import { useAppData } from "../state/AppDataContext";
 import { ToolCard } from "../components/ToolCard";
 import { Pill, ScreenHeader } from "../components/ui";
 
-const SWIPE_MIN_DISTANCE = 50;
 const SLIDE_MS = 260;
+const COMMIT_DISTANCE_FRACTION = 0.3; // drag past 30% of the page width...
+const COMMIT_VELOCITY = 0.6; // ...or release at over 0.6px/ms, commits the page change.
+const DEAD_ZONE = 8; // px of initial wiggle before a touch is read as a deliberate drag.
+
+type Gesture = {
+  x: number;
+  y: number;
+  time: number;
+  locked: "pending" | "vertical" | "horizontal";
+  dir?: 1 | -1;
+  width?: number;
+};
+
+/**
+ * One category's pills + blurb + tool grid + "add a tool" control — this is
+ * the whole unit that slides as a single page, rather than a static pill
+ * strip sitting above a separately-sliding grid. Each instance scrolls its
+ * own copy of the pill row to keep its active pill in view (pill labels can
+ * run wider than the screen).
+ */
+function CategoryPage({
+  catId,
+  categories,
+  tools,
+  onSelectCategory,
+  onOpenTool,
+  addCustomTool,
+}: {
+  catId: CategoryId;
+  categories: Category[];
+  tools: Tool[];
+  onSelectCategory: (id: CategoryId) => void;
+  onOpenTool: (tool: Tool) => void;
+  addCustomTool: (categoryId: CategoryId, name: string) => void;
+}) {
+  const pillRowRef = useRef<HTMLDivElement>(null);
+  const [addingName, setAddingName] = useState("");
+  const [showAdd, setShowAdd] = useState(false);
+  const cat = categories.find((c) => c.id === catId)!;
+
+  useEffect(() => {
+    const el = pillRowRef.current?.querySelector<HTMLElement>(`[data-cat-id="${catId}"]`);
+    el?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "nearest" });
+  }, [catId]);
+
+  return (
+    <div className="w-full shrink-0 px-5">
+      <div className="relative -mx-5">
+        <div ref={pillRowRef} className="flex gap-2 overflow-x-auto pb-1 px-5">
+          {categories.map((c) => (
+            <Pill key={c.id} data-cat-id={c.id} active={c.id === catId} onClick={() => onSelectCategory(c.id)}>
+              {c.name}
+            </Pill>
+          ))}
+        </div>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-0 bottom-1 w-10 bg-gradient-to-l from-paper to-transparent"
+        />
+      </div>
+
+      <p className="mt-3 text-xs text-ink-soft">{cat.blurb}</p>
+      {tools.length === 0 && <p className="mt-6 text-center text-sm text-ink-soft">Nothing here yet.</p>}
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        {tools.map((tool) => (
+          <ToolCard key={tool.id} tool={tool} onOpen={onOpenTool} />
+        ))}
+      </div>
+
+      <div className="mt-4">
+        {showAdd ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (addingName.trim()) {
+                addCustomTool(catId, addingName.trim());
+                setAddingName("");
+                setShowAdd(false);
+              }
+            }}
+            className="flex gap-2"
+          >
+            <input
+              autoFocus
+              value={addingName}
+              onChange={(e) => setAddingName(e.target.value)}
+              placeholder="New tool name"
+              aria-label="New tool name"
+              className="flex-1 rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
+            />
+            <button type="submit" className="rounded-xl bg-sage text-white px-4 text-sm font-medium">
+              Add
+            </button>
+          </form>
+        ) : (
+          <button onClick={() => setShowAdd(true)} className="text-sm text-ink-soft">
+            + Add a tool to {cat.name}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void }) {
   const { categories, toolsByCategory, favorites, tools, addCustomTool } = useAppData();
   const [activeCat, setActiveCat] = useState<CategoryId>(categories[0].id);
   const [showFavOnly, setShowFavOnly] = useState(false);
-  const [addingName, setAddingName] = useState("");
-  const [showAdd, setShowAdd] = useState(false);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const pillRowRef = useRef<HTMLDivElement>(null);
-
-  // Drives the slide-over transition between two category panels — the
-  // pill row above never moves, only this content area does. `phase`
-  // starts each transition pinned at its start position with no CSS
-  // transition, then flips to "end" a frame later so the browser actually
-  // animates between the two transform values instead of jumping.
-  const [slide, setSlide] = useState<{ from: CategoryId; to: CategoryId; dir: 1 | -1 } | null>(null);
-  const [phase, setPhase] = useState<"start" | "end">("start");
+  const activeIndex = categories.findIndex((c) => c.id === activeCat);
 
   const favoriteTools = tools.filter((t) => favorites.includes(t.id));
-  const activeCategory = categories.find((c) => c.id === activeCat)!;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const gestureRef = useRef<Gesture | null>(null);
+  const commitRef = useRef(false);
+  const justMountedRef = useRef(false);
+
+  // `transition` means a second page (the one being swiped or tapped to) is
+  // mounted alongside the current one and the two are sliding together as
+  // one physical track — pills and grid move as a single unit, not a
+  // static pill strip above a separately-animating grid. `dragX` is the
+  // live offset while a touch is in progress; `settling` switches on the
+  // eased CSS transition for the release/tap-triggered animation to its
+  // resting position.
+  const [transition, setTransition] = useState<{ target: CategoryId; dir: 1 | -1 } | null>(null);
+  const [dragX, setDragX] = useState(0);
+  const [settling, setSettling] = useState(false);
+
+  // A tapped pill has no touchmove sequence to animate from, so the new
+  // track mounts at dragX=0 with no transition first, then (next frame,
+  // once the browser has actually painted that starting position) flips to
+  // the commit position with the eased transition — otherwise there's
+  // nothing for the browser to interpolate from and it would just jump.
   useEffect(() => {
-    if (!slide) return;
-    const raf = requestAnimationFrame(() => setPhase("end"));
+    if (!transition || !justMountedRef.current) return;
+    justMountedRef.current = false;
+    const w = containerRef.current?.getBoundingClientRect().width ?? 0;
+    const raf = requestAnimationFrame(() => {
+      commitRef.current = true;
+      setSettling(true);
+      setDragX(transition.dir === 1 ? -w : w);
+    });
     return () => cancelAnimationFrame(raf);
-  }, [slide]);
-
-  // Keeps the newly-active pill in view in the horizontally-scrolling pill
-  // strip — the strip itself never slides with the content (per design),
-  // but on a long category name it can scroll several pills wide, so
-  // without this the active pill can end up scrolled out of sight.
-  const scrollPillIntoView = (id: string) => {
-    const row = pillRowRef.current;
-    const el = row?.querySelector<HTMLElement>(`[data-cat-id="${id}"]`);
-    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
-  };
+  }, [transition]);
 
   const goToCategory = (nextCat: CategoryId) => {
-    if (slide) return;
+    if (transition || nextCat === activeCat) return;
     if (showFavOnly) {
-      // Coming from Favorites, there's no on-screen category panel to
-      // slide from, so just switch straight to it.
+      // Coming from Favorites there's no on-screen category page to slide
+      // from, so just switch straight to it.
       setShowFavOnly(false);
       setActiveCat(nextCat);
-      scrollPillIntoView(nextCat);
       return;
     }
-    if (nextCat === activeCat) return;
-    const fromIndex = categories.findIndex((c) => c.id === activeCat);
-    const toIndex = categories.findIndex((c) => c.id === nextCat);
-    setPhase("start");
-    setSlide({ from: activeCat, to: nextCat, dir: toIndex > fromIndex ? 1 : -1 });
-    scrollPillIntoView(nextCat);
+    const nextIndex = categories.findIndex((c) => c.id === nextCat);
+    justMountedRef.current = true;
+    setDragX(0);
+    setSettling(false);
+    setTransition({ target: nextCat, dir: nextIndex > activeIndex ? 1 : -1 });
   };
 
-  const handleSlideEnd = () => {
-    if (!slide) return;
-    setActiveCat(slide.to);
-    setSlide(null);
-  };
-
-  // Swiping left/right over the tool grid moves between category sections,
-  // the same categories the pills above switch between — an alternative to
-  // tapping a pill. Skipped while viewing Favorites, since that's a filter
-  // rather than a section in the category order.
   const handleTouchStart = (e: TouchEvent) => {
+    if (transition || showFavOnly) return;
     const t = e.touches[0];
-    touchStart.current = { x: t.clientX, y: t.clientY };
+    gestureRef.current = { x: t.clientX, y: t.clientY, time: performance.now(), locked: "pending" };
   };
 
-  const handleTouchEnd = (e: TouchEvent) => {
-    const start = touchStart.current;
-    touchStart.current = null;
-    if (!start || slide) return;
-    const t = e.changedTouches[0];
-    const dx = t.clientX - start.x;
-    const dy = t.clientY - start.y;
-    if (Math.abs(dx) < SWIPE_MIN_DISTANCE || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-    const currentIndex = categories.findIndex((c) => c.id === activeCat);
-    const nextIndex = Math.min(Math.max(currentIndex + (dx < 0 ? 1 : -1), 0), categories.length - 1);
-    if (nextIndex !== currentIndex) goToCategory(categories[nextIndex].id);
+  const handleTouchMove = (e: TouchEvent) => {
+    const g = gestureRef.current;
+    if (!g || g.locked === "vertical") return;
+    const t = e.touches[0];
+    const dx = t.clientX - g.x;
+    const dy = t.clientY - g.y;
+
+    if (g.locked === "pending") {
+      if (Math.abs(dx) < DEAD_ZONE && Math.abs(dy) < DEAD_ZONE) return;
+      if (Math.abs(dx) < Math.abs(dy) * 1.5) {
+        g.locked = "vertical"; // a vertical scroll, not a page swipe — leave it alone
+        return;
+      }
+      const dir: 1 | -1 = dx < 0 ? 1 : -1;
+      const nextIndex = activeIndex + dir;
+      if (nextIndex < 0 || nextIndex >= categories.length) {
+        g.locked = "vertical"; // at the first/last category — nothing to swipe to
+        return;
+      }
+      g.locked = "horizontal";
+      g.dir = dir;
+      g.width = containerRef.current?.getBoundingClientRect().width ?? 1;
+      setTransition({ target: categories[nextIndex].id, dir });
+    }
+
+    if (g.locked !== "horizontal" || g.dir == null || g.width == null) return;
+    const clamped = g.dir === 1 ? Math.max(-g.width, Math.min(0, dx)) : Math.min(g.width, Math.max(0, dx));
+    setDragX(clamped);
   };
 
-  const renderPanel = (catId: CategoryId) => {
-    const cat = categories.find((c) => c.id === catId)!;
-    const catTools = toolsByCategory(catId);
-    return (
-      <div key={catId} className="w-full shrink-0 px-5">
-        <p className="mt-3 text-xs text-ink-soft">{cat.blurb}</p>
-        {catTools.length === 0 && <p className="mt-6 text-center text-sm text-ink-soft">Nothing here yet.</p>}
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          {catTools.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} onOpen={onOpenTool} />
-          ))}
-        </div>
-      </div>
+  const handleTouchEnd = () => {
+    const g = gestureRef.current;
+    gestureRef.current = null;
+    if (!g || g.locked !== "horizontal" || g.dir == null || g.width == null) return;
+    const elapsed = Math.max(1, performance.now() - g.time);
+    const velocity = Math.abs(dragX) / elapsed;
+    const commit = Math.abs(dragX) / g.width > COMMIT_DISTANCE_FRACTION || velocity > COMMIT_VELOCITY;
+    commitRef.current = commit;
+    setSettling(true);
+    setDragX(commit ? (g.dir === 1 ? -g.width : g.width) : 0);
+  };
+
+  const handleSettled = () => {
+    if (!settling) return;
+    setSettling(false);
+    if (commitRef.current && transition) {
+      commitRef.current = false;
+      setActiveCat(transition.target);
+    }
+    setTransition(null);
+    setDragX(0);
+  };
+
+  const w = containerRef.current?.getBoundingClientRect().width ?? 0;
+  const currentPage = (
+    <CategoryPage
+      key={activeCat}
+      catId={activeCat}
+      categories={categories}
+      tools={toolsByCategory(activeCat)}
+      onSelectCategory={goToCategory}
+      onOpenTool={onOpenTool}
+      addCustomTool={addCustomTool}
+    />
+  );
+  let trackChildren = [currentPage];
+  let trackTransform = 0;
+  if (transition) {
+    const targetPage = (
+      <CategoryPage
+        key={transition.target}
+        catId={transition.target}
+        categories={categories}
+        tools={toolsByCategory(transition.target)}
+        onSelectCategory={goToCategory}
+        onOpenTool={onOpenTool}
+        addCustomTool={addCustomTool}
+      />
     );
-  };
-
-  // While mid-slide, the moving track shows the "from" and "to" panels
-  // side by side (ordered by swipe direction) and animates translateX
-  // from showing one to showing the other; at rest it's just one panel.
-  let trackChildren = [renderPanel(activeCat)];
-  let trackTransform = "translateX(0%)";
-  if (slide) {
-    trackChildren = slide.dir === 1 ? [renderPanel(slide.from), renderPanel(slide.to)] : [renderPanel(slide.to), renderPanel(slide.from)];
-    const atStart = slide.dir === 1 ? "0%" : "-100%";
-    const atEnd = slide.dir === 1 ? "-100%" : "0%";
-    trackTransform = `translateX(${phase === "start" ? atStart : atEnd})`;
+    trackChildren = transition.dir === 1 ? [currentPage, targetPage] : [targetPage, currentPage];
+    trackTransform = transition.dir === 1 ? dragX : dragX - w;
   }
 
   return (
@@ -122,95 +260,48 @@ export function ToolkitScreen({ onOpenTool }: { onOpenTool: (tool: Tool) => void
       <ScreenHeader title="Toolkit" subtitle="Your coping tools, organized your way." />
 
       <div className="px-5">
-        <div className="relative -mx-5">
-          <div ref={pillRowRef} className="flex gap-2 overflow-x-auto pb-1 px-5">
-            <Pill
-              data-cat-id="favorites"
-              active={showFavOnly}
-              onClick={() => {
-                setShowFavOnly((v) => !v);
-                scrollPillIntoView("favorites");
-              }}
-            >
-              ★ Favorites
-            </Pill>
-            {categories.map((c) => (
-              <Pill
-                key={c.id}
-                data-cat-id={c.id}
-                active={!showFavOnly && activeCat === c.id}
-                onClick={() => goToCategory(c.id)}
-              >
-                {c.name}
-              </Pill>
+        <Pill
+          active={showFavOnly}
+          onClick={() => {
+            if (transition) return;
+            setShowFavOnly((v) => !v);
+          }}
+        >
+          ★ Favorites
+        </Pill>
+      </div>
+
+      {showFavOnly ? (
+        <div className="px-5 mt-4">
+          {favoriteTools.length === 0 && (
+            <p className="mt-6 text-center text-sm text-ink-soft">Pin a tool to see it here.</p>
+          )}
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {favoriteTools.map((tool) => (
+              <ToolCard key={tool.id} tool={tool} onOpen={onOpenTool} />
             ))}
           </div>
-          <div
-            aria-hidden
-            className="pointer-events-none absolute right-0 top-0 bottom-1 w-10 bg-gradient-to-l from-paper to-transparent"
-          />
         </div>
-
-        {showFavOnly ? (
-          <div className="px-5">
-            {favoriteTools.length === 0 && (
-              <p className="mt-6 text-center text-sm text-ink-soft">Pin a tool to see it here.</p>
-            )}
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              {favoriteTools.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} onOpen={onOpenTool} />
-              ))}
-            </div>
+      ) : (
+        <div
+          ref={containerRef}
+          className="mt-4 overflow-hidden"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div
+            className="flex"
+            style={{
+              transform: `translateX(${trackTransform}px)`,
+              transition: settling ? `transform ${SLIDE_MS}ms ease-out` : "none",
+            }}
+            onTransitionEnd={handleSettled}
+          >
+            {trackChildren}
           </div>
-        ) : (
-          <div className="-mx-5 overflow-hidden" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            <div
-              className="flex"
-              style={{
-                transform: trackTransform,
-                transition: slide && phase === "end" ? `transform ${SLIDE_MS}ms ease-out` : "none",
-              }}
-              onTransitionEnd={handleSlideEnd}
-            >
-              {trackChildren}
-            </div>
-          </div>
-        )}
-
-        {!showFavOnly && (
-          <div className="mt-4">
-            {showAdd ? (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (addingName.trim()) {
-                    addCustomTool(activeCat, addingName.trim());
-                    setAddingName("");
-                    setShowAdd(false);
-                  }
-                }}
-                className="flex gap-2"
-              >
-                <input
-                  autoFocus
-                  value={addingName}
-                  onChange={(e) => setAddingName(e.target.value)}
-                  placeholder="New tool name"
-                  aria-label="New tool name"
-                  className="flex-1 rounded-xl border border-line/10 bg-surface/80 px-3 py-2 text-sm"
-                />
-                <button type="submit" className="rounded-xl bg-sage text-white px-4 text-sm font-medium">
-                  Add
-                </button>
-              </form>
-            ) : (
-              <button onClick={() => setShowAdd(true)} className="text-sm text-ink-soft">
-                + Add a tool to {activeCategory.name}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
